@@ -26,7 +26,7 @@ export default async function HomePage() {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-6 px-4 py-8 text-center sm:py-12">
-      <Chip variant="mode">Phase 2: Authentication & Database</Chip>
+      <Chip variant="mode">Phase 4: Practice Mode (Definition → Word)</Chip>
 
       {/* Greeting and Mascot */}
       <div className="flex flex-col items-center gap-4 sm:flex-row sm:text-left">
@@ -35,6 +35,30 @@ export default async function HomePage() {
           Mabuhay, <strong className="text-primary">{displayName}</strong>! Your profile
           is ready and authenticated.
         </SpeechBubble>
+      </div>
+
+      {/* Start Practice Call-to-Action */}
+      <div className="border-primary/40 bg-card flex w-full flex-col items-center gap-3 rounded-3xl border-2 p-6 shadow-[0_4px_0_var(--secondary-shadow)]">
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-muted text-xs font-extrabold tracking-wider uppercase">
+            Ready for your typing practice?
+          </span>
+          <h2 className="text-foreground text-2xl font-extrabold sm:text-3xl">
+            Definition → Word
+          </h2>
+          <p className="text-muted max-w-md text-sm">
+            Read the definition, type the word, and test your vocabulary with live letter
+            feedback!
+          </p>
+        </div>
+
+        <ButtonLink
+          href="/practice/def_to_word"
+          size="lg"
+          className="mt-2 min-w-[240px] text-lg"
+        >
+          Start 10-Word Session
+        </ButtonLink>
       </div>
 
       {/* Profile Details Card */}

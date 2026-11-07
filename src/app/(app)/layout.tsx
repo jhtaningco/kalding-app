@@ -7,6 +7,8 @@ import { SpeechBubble } from "@/components/kalding/SpeechBubble";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 
+export const instant = false;
+
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
