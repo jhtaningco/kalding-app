@@ -11,7 +11,13 @@ export async function updateSession(request: NextRequest) {
   });
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const rawKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const supabaseAnonKey =
+    rawKey?.endsWith("...") && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+      ? process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+      : rawKey;
 
   // If env vars are not yet configured, don't crash the proxy
   if (!supabaseUrl || !supabaseAnonKey) {
