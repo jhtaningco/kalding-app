@@ -1,10 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
+import { calculateStreak } from "@/core/streak";
+import { calculateLevel } from "@/core/levels";
+import { calculateDailyGoalProgress } from "@/core/dailyGoal";
 import { Kalding } from "@/components/kalding/Kalding";
 import { SpeechBubble } from "@/components/kalding/SpeechBubble";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
-import { CheckIcon } from "@/components/ui/icons";
+import { CheckIcon, FlameIcon, StarIcon, BookOpenIcon } from "@/components/ui/icons";
+import { StreakCard } from "@/components/gamification/StreakCard";
+import { DailyGoalCard } from "@/components/gamification/DailyGoalCard";
+import { LevelCard } from "@/components/gamification/LevelCard";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -13,50 +19,95 @@ export default async function HomePage() {
   } = await supabase.auth.getUser();
 
   let profile = null;
+  let totalXp = 0;
+  let todayPoints = 0;
+  const activeDates: string[] = [];
+
   if (user) {
-    const { data } = await supabase
+    // 1. Fetch user profile
+    const { data: profileData } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", user.id)
       .maybeSingle();
-    profile = data;
+    profile = profileData;
+
+    // 2. Fetch total points from attempts
+    const { data: attemptsData } = await supabase
+      .from("attempts")
+      .select("points_earned")
+      .eq("user_id", user.id);
+
+    if (attemptsData) {
+      totalXp = attemptsData.reduce((acc, a) => acc + (a.points_earned || 0), 0);
+    }
+
+    // 3. Fetch daily stats for streak & today's goal
+    const { data: dailyStatsData } = await supabase
+      .from("daily_stats")
+      .select("date, points, words_practiced")
+      .eq("user_id", user.id);
+
+    if (dailyStatsData) {
+      const todayStr = new Date().toISOString().split("T")[0];
+      for (const entry of dailyStatsData) {
+        if (entry.words_practiced > 0 || entry.points > 0) {
+          activeDates.push(entry.date);
+        }
+        if (entry.date === todayStr) {
+          todayPoints = entry.points;
+        }
+      }
+    }
   }
 
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Learner";
+  const streak = calculateStreak(activeDates);
+  const levelInfo = calculateLevel(totalXp);
+  const dailyGoalProgress = calculateDailyGoalProgress(todayPoints, profile?.daily_goal);
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-6 px-4 py-8 text-center sm:py-12">
-      <Chip variant="mode">Phase 6: Practice Modes & Arena</Chip>
+    <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center gap-6 px-4 py-6 sm:py-10">
+      <Chip variant="mode">Phase 7: Gamification & Home Dashboard</Chip>
 
-      {/* Greeting and Mascot */}
-      <div className="flex flex-col items-center gap-4 sm:flex-row sm:text-left">
-        <Kalding mood="happy" size={130} title="Kalding is happy to see you" />
-        <SpeechBubble tail="left" className="text-base sm:text-lg">
-          Mabuhay, <strong className="text-primary">{displayName}</strong>! All 5 practice
-          modes and your spaced repetition queue are active.
-        </SpeechBubble>
+      {/* Hero Mascot & Speech Greeting */}
+      <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
+        <Kalding mood="body" size={170} title="Kalding the goat mascot" />
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+            <span className="border-primary/40 bg-primary/10 text-primary flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-black">
+              <StarIcon size={13} /> Level {levelInfo.level} • {levelInfo.title}
+            </span>
+            <span className="border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-black">
+              <FlameIcon size={13} /> {streak.currentStreak} Day Streak
+            </span>
+          </div>
+
+          <SpeechBubble tail="left" className="text-base sm:text-lg">
+            Mabuhay, <strong className="text-primary">{displayName}</strong>! You are a{" "}
+            <strong>{levelInfo.title}</strong> with{" "}
+            <strong>{totalXp} XP</strong>. {dailyGoalProgress.cheerMessage}
+          </SpeechBubble>
+        </div>
       </div>
 
-      {/* Start Practice Call-to-Action */}
-      <div className="border-primary/40 bg-card flex w-full flex-col items-center gap-3 rounded-3xl border-2 p-6 shadow-[0_4px_0_var(--secondary-shadow)]">
+      {/* Main Practice Call to Action Card */}
+      <div className="border-primary/40 bg-card flex w-full flex-col items-center gap-3 rounded-3xl border-2 p-6 text-center shadow-[0_4px_0_var(--secondary-shadow)] sm:p-8">
         <div className="flex flex-col items-center gap-1">
           <span className="text-muted text-xs font-extrabold tracking-wider uppercase">
-            Choose Your Challenge
+            Interactive Typing Arena
           </span>
-          <h2 className="text-foreground text-2xl font-extrabold sm:text-3xl">
-            Practice Arena
+          <h2 className="text-foreground text-2xl font-black sm:text-3xl">
+            Choose Your Learning Path
           </h2>
           <p className="text-muted max-w-md text-sm">
-            5 interactive modes: Definition, Fill in the Blank, Dictation, Speed Run, and AI-Graded Word Explanation!
+            Practice vocabulary through 5 specialized typing modes or review words scheduled
+            in your spaced repetition queue.
           </p>
         </div>
 
         <div className="flex flex-wrap justify-center gap-3 pt-2">
-          <ButtonLink
-            href="/practice"
-            size="lg"
-            className="min-w-[220px] text-lg"
-          >
+          <ButtonLink href="/practice" size="lg" className="min-w-[220px] text-lg">
             Enter Practice Arena
           </ButtonLink>
           <ButtonLink
@@ -70,10 +121,20 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* Profile Details Card */}
+      {/* Gamification Stats Widgets Grid */}
+      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
+        <DailyGoalCard progress={dailyGoalProgress} />
+        <StreakCard streak={streak} />
+        <LevelCard levelInfo={levelInfo} />
+      </div>
+
+      {/* Profile Overview Card */}
       <Card className="flex w-full flex-col gap-4 text-left">
         <div className="border-border flex items-center justify-between border-b-2 pb-3">
-          <h2 className="text-foreground text-lg font-extrabold">Profile Overview</h2>
+          <div className="flex items-center gap-2">
+            <BookOpenIcon size={18} className="text-primary" />
+            <h2 className="text-foreground text-lg font-extrabold">Learner Profile</h2>
+          </div>
           <span className="border-success-border bg-success-bg text-success-fg flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-bold">
             <CheckIcon size={14} /> Active Session
           </span>
@@ -109,7 +170,7 @@ export default async function HomePage() {
 
           <div className="border-border/80 bg-background/50 flex flex-col rounded-xl border p-3">
             <dt className="text-muted text-xs font-bold tracking-wider uppercase">
-              Daily Goal
+              Daily Target
             </dt>
             <dd className="text-foreground text-sm font-bold">
               {profile?.daily_goal ?? 100} points / day
@@ -119,13 +180,10 @@ export default async function HomePage() {
 
         <div className="border-border mt-2 flex flex-wrap items-center justify-between gap-3 border-t-2 pt-4">
           <div className="flex flex-wrap gap-2">
-            <ButtonLink href="/review" size="sm">
-              Review Queue
-            </ButtonLink>
-            <ButtonLink href="/words" variant="secondary" size="sm">
+            <ButtonLink href="/words" size="sm" variant="secondary">
               Word Bank
             </ButtonLink>
-            <ButtonLink href="/design" variant="ghost" size="sm">
+            <ButtonLink href="/design" size="sm" variant="ghost">
               Design System
             </ButtonLink>
           </div>
@@ -137,10 +195,6 @@ export default async function HomePage() {
           </form>
         </div>
       </Card>
-
-      <p className="text-muted max-w-md text-xs">
-        Words practiced in typing sessions are scheduled with SM-2 spaced repetition to ensure long-term retention.
-      </p>
     </div>
   );
 }
