@@ -3,7 +3,7 @@ import { PointsChip } from "@/components/gamification/PointsChip";
 import { StreakChip } from "@/components/gamification/StreakChip";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import { XIcon } from "@/components/ui/icons";
+import { XIcon, UserIcon, GearIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/cn";
 
 export type TopBarProps = {
@@ -56,16 +56,61 @@ export function TopBar({
             className="min-w-12 flex-1"
           />
         ) : (
-          <Link
-            href="/"
-            className="text-primary focus-visible:ring-focus flex-1 truncate rounded-lg text-lg font-extrabold focus-visible:ring-4 focus-visible:outline-none"
-          >
-            Kalding English
-          </Link>
+          <div className="flex flex-1 items-center gap-3 truncate">
+            <Link
+              href="/"
+              className="text-primary focus-visible:ring-focus truncate rounded-lg text-lg font-extrabold focus-visible:ring-4 focus-visible:outline-none"
+            >
+              Kalding
+            </Link>
+
+            <nav className="hidden items-center gap-1.5 md:flex">
+              <Link
+                href="/practice"
+                className="text-muted hover:text-foreground rounded-lg px-2.5 py-1 text-xs font-bold transition-colors"
+              >
+                Practice
+              </Link>
+              <Link
+                href="/review"
+                className="text-muted hover:text-foreground rounded-lg px-2.5 py-1 text-xs font-bold transition-colors"
+              >
+                Review
+              </Link>
+              <Link
+                href="/words"
+                className="text-muted hover:text-foreground rounded-lg px-2.5 py-1 text-xs font-bold transition-colors"
+              >
+                Words
+              </Link>
+            </nav>
+          </div>
         )}
 
         <StreakChip days={streak} />
         <PointsChip points={points} />
+
+        {!progress && (
+          <div className="flex items-center gap-1">
+            <Link
+              href="/profile"
+              aria-label="Learner Profile"
+              title="Profile & Stats"
+              className="text-muted hover:bg-border/40 hover:text-foreground inline-flex size-9 items-center justify-center rounded-xl transition-colors"
+            >
+              <UserIcon size={18} />
+            </Link>
+            <Link
+              href="/settings"
+              aria-label="Settings"
+              title="Settings & Preferences"
+              className="text-muted hover:bg-border/40 hover:text-foreground inline-flex size-9 items-center justify-center rounded-xl transition-colors"
+            >
+              <GearIcon size={18} />
+            </Link>
+          </div>
+        )}
+
         {!hideThemeToggle && <ThemeToggle />}
       </div>
     </header>

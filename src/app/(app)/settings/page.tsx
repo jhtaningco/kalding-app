@@ -1,26 +1,40 @@
-import { Kalding } from "@/components/kalding/Kalding";
-import { SpeechBubble } from "@/components/kalding/SpeechBubble";
-import { ButtonLink } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Chip } from "@/components/ui/Chip";
+import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
+import { SettingsForm } from "./settings-form";
 
-export default function SettingsPage() {
+export const metadata: Metadata = {
+  title: "Settings & Preferences | Kalding English",
+  description: "Customize your daily goals, theme preferences, and learning settings.",
+};
+
+export default async function SettingsPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let profile = null;
+  if (user) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .maybeSingle();
+    profile = data;
+  }
+
+  const initialDisplayName =
+    profile?.display_name || user?.email?.split("@")[0] || "Learner";
+  const initialDailyGoal = profile?.daily_goal || 100;
+  const initialLanguage = profile?.language || "en";
+
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center justify-center gap-6 p-6 text-center">
-      <Chip variant="neutral">App Settings</Chip>
-      <div className="flex items-center gap-3">
-        <Kalding mood="neutral" size={100} />
-        <SpeechBubble>Settings customization arrives in Phase 8!</SpeechBubble>
-      </div>
-      <Card className="flex flex-col gap-4 text-left">
-        <h2 className="text-foreground text-lg font-extrabold">Coming in Phase 8</h2>
-        <p className="text-muted text-sm">
-          Adjust daily goals, audio preferences, and theme preferences.
-        </p>
-        <ButtonLink href="/" size="sm" variant="secondary">
-          Back to Home
-        </ButtonLink>
-      </Card>
-    </div>
+    <SettingsForm
+      initialDisplayName={initialDisplayName}
+      initialDailyGoal={initialDailyGoal}
+      initialLanguage={initialLanguage}
+      email={user?.email || ""}
+      userId={user?.id || ""}
+    />
   );
 }

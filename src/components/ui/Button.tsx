@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
 const base =
@@ -18,6 +18,8 @@ const variants: Record<ButtonVariant, string> = {
     "border-border bg-card text-foreground shadow-[0_4px_0_var(--secondary-shadow)] hover:bg-background active:translate-y-1 active:shadow-none",
   ghost:
     "border-transparent bg-transparent text-muted hover:bg-border/50 active:bg-border",
+  danger:
+    "border-danger-border bg-danger-bg text-danger-fg shadow-[0_4px_0_var(--danger-border)] hover:brightness-105 active:translate-y-1 active:shadow-none",
 };
 
 const sizes: Record<ButtonSize, string> = {
