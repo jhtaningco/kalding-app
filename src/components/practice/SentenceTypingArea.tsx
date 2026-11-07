@@ -6,7 +6,7 @@ export interface SentenceTypingAreaProps {
   targetText: string;
   typedText: string;
   onChange: (value: string) => void;
-  onSubmit?: () => void;
+  onSubmit?: (value?: string) => void;
   onMistake?: () => void;
   disabled?: boolean;
 }
@@ -53,7 +53,7 @@ export function SentenceTypingArea({
 
     // Auto submit if the user typed the entire sentence/definition
     if (value.length >= targetText.length && onSubmit) {
-      onSubmit();
+      onSubmit(value);
     }
   };
 
@@ -61,7 +61,7 @@ export function SentenceTypingArea({
     if (disabled) return;
     if (e.key === "Enter" && onSubmit) {
       e.preventDefault();
-      onSubmit();
+      onSubmit(typedText);
     }
   };
 
@@ -108,13 +108,15 @@ export function SentenceTypingArea({
             charClass = "text-danger-fg bg-danger-bg/80 rounded-sm underline font-extrabold";
           }
 
+          const displayChar = isWrong ? (typedChar === " " ? "␣" : typedChar) : char;
+
           return (
             <span key={index} className="relative inline-block whitespace-pre">
               {/* Blinking typing cursor */}
               {isCurrent && !disabled && (
                 <span className="bg-primary absolute -left-[1px] top-[10%] bottom-[10%] w-[2.5px] animate-pulse rounded-full" />
               )}
-              <span className={charClass}>{char}</span>
+              <span className={charClass}>{displayChar}</span>
             </span>
           );
         })}

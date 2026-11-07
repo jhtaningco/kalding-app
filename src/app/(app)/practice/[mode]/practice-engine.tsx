@@ -151,11 +151,12 @@ function WordExercise({
     }
   };
 
-  const handleCheck = async () => {
+  const handleCheck = async (overrideText?: string) => {
     if (status !== "idle" || isGrading) return;
 
     const startedAt = startTimeRef.current || Date.now();
     const timeMs = Math.max(200, Date.now() - startedAt);
+    const textToEvaluate = typeof overrideText === "string" ? overrideText : typedText;
 
     // 1. Word to Definition AI mode
     if (mode === "word_to_def") {
@@ -215,7 +216,7 @@ function WordExercise({
     // 2. Full Definition or Sentence Transcription Mode
     if (isSentenceMode) {
       const isExactMatch =
-        typedText.trim().toLowerCase() === sentenceTarget.trim().toLowerCase();
+        textToEvaluate.trim().toLowerCase() === sentenceTarget.trim().toLowerCase();
       const accuracy = Math.max(
         0,
         Math.min(
@@ -374,7 +375,7 @@ function WordExercise({
             targetText={sentenceTarget}
             typedText={typedText}
             onChange={setTypedText}
-            onSubmit={status === "idle" ? handleCheck : handleNext}
+            onSubmit={status === "idle" ? (val) => handleCheck(val) : handleNext}
             onMistake={handleMistake}
             disabled={status !== "idle"}
           />
