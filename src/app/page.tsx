@@ -1,18 +1,29 @@
+import { Kalding } from "@/components/kalding/Kalding";
+import { SpeechBubble } from "@/components/kalding/SpeechBubble";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { ButtonLink } from "@/components/ui/Button";
+import { Chip } from "@/components/ui/Chip";
+
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
-      <p className="rounded-full border-2 border-[#d5dfd8] bg-white px-4 py-1 text-sm font-bold text-[#4b5563]">
-        Phase 0: project setup
-      </p>
-      <h1 className="text-5xl font-extrabold tracking-tight text-[#167a4f]">
+    <main className="relative flex flex-1 flex-col items-center justify-center gap-5 px-6 py-24 text-center">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+      <Chip>Phase 1: design system</Chip>
+      <div className="flex items-center gap-3">
+        <Kalding mood="happy" size={120} />
+        <SpeechBubble>Ready for today&apos;s words?</SpeechBubble>
+      </div>
+      <h1 className="text-primary text-5xl font-extrabold tracking-tight">
         Kalding English
       </h1>
-      <p className="max-w-md text-lg text-[#4b5563]">
-        Learn English by typing. The app shell is running. The design system comes next.
+      <p className="text-muted max-w-md text-lg">
+        Learn English by typing. The real home screen arrives in a later phase.
       </p>
-      <p className="font-mono text-base text-[#1f2937]">
-        type<span className="animate-pulse">|</span>
-      </p>
+      <ButtonLink href="/design" size="lg">
+        Open design page
+      </ButtonLink>
     </main>
   );
 }
