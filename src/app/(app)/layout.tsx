@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { TopBar } from "@/components/layout/TopBar";
 import { Kalding } from "@/components/kalding/Kalding";
@@ -60,6 +61,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key`}
     );
   }
 
+  await connection();
   const supabase = await createClient();
   const {
     data: { user },
