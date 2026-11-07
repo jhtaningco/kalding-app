@@ -42,10 +42,13 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key`}
             </pre>
             <div className="flex flex-wrap gap-3 pt-2">
+              <ButtonLink href="/words" size="sm">
+                Preview Word Bank
+              </ButtonLink>
               <ButtonLink href="/design" size="sm" variant="secondary">
                 View Design System
               </ButtonLink>
-              <ButtonLink href="/login" size="sm">
+              <ButtonLink href="/login" size="sm" variant="ghost">
                 Go to Sign In
               </ButtonLink>
             </div>

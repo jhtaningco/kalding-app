@@ -1,27 +1,58 @@
-import { Kalding } from "@/components/kalding/Kalding";
-import { SpeechBubble } from "@/components/kalding/SpeechBubble";
-import { ButtonLink } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { Chip } from "@/components/ui/Chip";
+import fs from "node:fs";
+import path from "node:path";
+import type { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
+import { WordsManager } from "./words-manager";
+import type { Tables } from "@/types/database";
 
-export default function WordsPage() {
+export const metadata: Metadata = {
+  title: "Word Bank | Kalding English",
+  description: "Browse and add custom English vocabulary for typing practice.",
+};
+
+export default async function WordsPage() {
+  const supabase = await createClient();
+  const { data: dbWords } = await supabase
+    .from("words")
+    .select("*")
+    .order("word", { ascending: true });
+
+  let words: Tables<"words">[] = dbWords ?? [];
+
+  // If the database has not been seeded yet with live Supabase,
+  // load starter words from words.json so learner can browse and test immediately!
+  if (words.length === 0) {
+    try {
+      const seedPath = path.resolve(process.cwd(), "supabase/seed/words.json");
+      if (fs.existsSync(seedPath)) {
+        const raw = fs.readFileSync(seedPath, "utf-8");
+        const seedItems = JSON.parse(raw);
+        words = seedItems.map(
+          (
+            item: {
+              word: string;
+              part_of_speech: string;
+              definition: string;
+              example_sentence: string;
+              level: string;
+              language: string;
+            },
+            idx: number,
+          ) => ({
+            id: `seed-${idx}`,
+            created_at: new Date().toISOString(),
+            ...item,
+          }),
+        );
+      }
+    } catch {
+      // ignore read error
+    }
+  }
+
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center justify-center gap-6 p-6 text-center">
-      <Chip variant="neutral">Custom Vocabulary</Chip>
-      <div className="flex items-center gap-3">
-        <Kalding mood="happy" size={100} />
-        <SpeechBubble>Word management arrives in Phase 3!</SpeechBubble>
-      </div>
-      <Card className="flex flex-col gap-4 text-left">
-        <h2 className="text-foreground text-lg font-extrabold">Coming in Phase 3</h2>
-        <p className="text-muted text-sm">
-          Add your own custom words with definitions, parts of speech, and example
-          sentences.
-        </p>
-        <ButtonLink href="/" size="sm" variant="secondary">
-          Back to Home
-        </ButtonLink>
-      </Card>
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:py-12">
+      <WordsManager initialWords={words} />
     </div>
   );
 }

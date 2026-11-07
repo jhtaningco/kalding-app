@@ -85,9 +85,14 @@ export default async function HomePage() {
         </dl>
 
         <div className="border-border mt-2 flex flex-wrap items-center justify-between gap-3 border-t-2 pt-4">
-          <ButtonLink href="/design" variant="secondary" size="sm">
-            View Design System
-          </ButtonLink>
+          <div className="flex flex-wrap gap-2">
+            <ButtonLink href="/words" size="sm">
+              Explore Word Bank
+            </ButtonLink>
+            <ButtonLink href="/design" variant="secondary" size="sm">
+              Design System
+            </ButtonLink>
+          </div>
 
           <form action="/api/auth/signout" method="POST">
             <Button type="submit" variant="ghost" size="sm">
