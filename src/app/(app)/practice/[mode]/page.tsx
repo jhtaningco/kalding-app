@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PracticeEngine } from "./practice-engine";
+import { WordRushEngine } from "@/components/practice/WordRushEngine";
 import type { PracticeMode } from "@/components/practice/PromptCard";
 import type { Tables } from "@/types/database";
 
@@ -60,6 +61,36 @@ const MODE_CONFIGS: Record<
     name: "Word → Definition (AI Graded)",
     description: "Explain the word in your own words and receive AI feedback.",
   },
+  type_def: {
+    modeKey: "type_def",
+    name: "Type the Definition",
+    description: "Type out the complete dictionary definition word-for-word.",
+  },
+  "type-def": {
+    modeKey: "type_def",
+    name: "Type the Definition",
+    description: "Type out the complete dictionary definition word-for-word.",
+  },
+  sentence_type: {
+    modeKey: "sentence_type",
+    name: "Sentence Transcription",
+    description: "Type out the complete example sentence with punctuation.",
+  },
+  "sentence-type": {
+    modeKey: "sentence_type",
+    name: "Sentence Transcription",
+    description: "Type out the complete example sentence with punctuation.",
+  },
+  word_rush: {
+    modeKey: "word_rush",
+    name: "Word Rush",
+    description: "Continuous rapid-fire vocabulary stream. Hit Spacebar to advance!",
+  },
+  "word-rush": {
+    modeKey: "word_rush",
+    name: "Word Rush",
+    description: "Continuous rapid-fire vocabulary stream. Hit Spacebar to advance!",
+  },
 };
 
 export async function generateMetadata({
@@ -93,8 +124,9 @@ export default async function PracticePage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 1. Fetch starter or user words (10 words)
-  const { data: dbWords } = await supabase.from("words").select("*").limit(20);
+  // 1. Fetch starter or user words (25 words for rush, 10 for others)
+  const limitCount = config.modeKey === "word_rush" ? 25 : 20;
+  const { data: dbWords } = await supabase.from("words").select("*").limit(limitCount);
 
   let words: Tables<"words">[] = dbWords ?? [];
 
@@ -105,7 +137,7 @@ export default async function PracticePage({
       if (fs.existsSync(seedPath)) {
         const raw = fs.readFileSync(seedPath, "utf-8");
         const seedItems = JSON.parse(raw);
-        words = seedItems.slice(0, 10).map(
+        words = seedItems.slice(0, limitCount).map(
           (
             item: {
               word: string;
@@ -128,9 +160,6 @@ export default async function PracticePage({
     }
   }
 
-  // Pick up to 10 words for the session
-  const sessionWords = words.slice(0, 10);
-
   // 2. Fetch user's current total points from previous attempts
   let initialPoints = 0;
   if (user) {
@@ -143,6 +172,21 @@ export default async function PracticePage({
       initialPoints = userAttempts.reduce((acc, a) => acc + (a.points_earned || 0), 0);
     }
   }
+
+  // If Word Rush continuous stream mode
+  if (config.modeKey === "word_rush") {
+    return (
+      <WordRushEngine
+        words={words}
+        initialPoints={initialPoints}
+        initialStreak={1}
+        userId={user?.id}
+      />
+    );
+  }
+
+  // Standard session modes (10 words)
+  const sessionWords = words.slice(0, 10);
 
   return (
     <PracticeEngine

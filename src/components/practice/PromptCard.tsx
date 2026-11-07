@@ -11,7 +11,10 @@ export type PracticeMode =
   | "fill_blank"
   | "dictation"
   | "speed_run"
-  | "word_to_def";
+  | "word_to_def"
+  | "type_def"
+  | "sentence_type"
+  | "word_rush";
 
 export type PromptCardProps = {
   word: Tables<"words">;
@@ -107,6 +110,34 @@ export function PromptCard({
           {isAnswered && (
             <p className="text-muted text-sm font-semibold">{word.definition}</p>
           )}
+        </div>
+      ) : mode === "type_def" ? (
+        <div className="flex flex-col gap-2">
+          <p className="text-muted text-xs font-extrabold tracking-wider uppercase">
+            Type the full definition
+          </p>
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-primary text-3xl font-black sm:text-4xl">
+              {word.word}
+            </h2>
+            <span className="text-muted text-sm font-bold italic">
+              ({word.part_of_speech})
+            </span>
+          </div>
+        </div>
+      ) : mode === "sentence_type" ? (
+        <div className="flex flex-col gap-2">
+          <p className="text-muted text-xs font-extrabold tracking-wider uppercase">
+            Transcribe the example sentence
+          </p>
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-primary text-2xl font-black sm:text-3xl">
+              Target: {word.word}
+            </h2>
+            <span className="text-muted text-xs font-bold italic">
+              ({word.part_of_speech})
+            </span>
+          </div>
         </div>
       ) : mode === "word_to_def" ? (
         <div className="flex flex-col gap-2">

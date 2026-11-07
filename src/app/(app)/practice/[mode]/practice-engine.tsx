@@ -16,6 +16,7 @@ import { FeedbackBar } from "@/components/practice/FeedbackBar";
 import { PromptCard, type PracticeMode } from "@/components/practice/PromptCard";
 import { SessionSummary, type SessionResult } from "@/components/practice/SessionSummary";
 import { TypingArea } from "@/components/practice/TypingArea";
+import { SentenceTypingArea } from "@/components/practice/SentenceTypingArea";
 
 export type PracticeEngineProps = {
   words: Tables<"words">[];
@@ -62,6 +63,12 @@ function WordExercise({
   const [isGrading, setIsGrading] = useState(false);
   const [gradeFeedback, setGradeFeedback] = useState<GradeResponse | null>(null);
 
+  const isSentenceMode = mode === "type_def" || mode === "sentence_type";
+  const sentenceTarget =
+    mode === "type_def"
+      ? word.definition
+      : word.example_sentence || word.definition;
+
   const startTimeRef = useRef<number>(0);
   const pendingResultRef = useRef<SessionResult | null>(null);
 
@@ -91,7 +98,11 @@ function WordExercise({
   let mood: KaldingMood = "neutral";
   let speechText = "";
 
-  if (mode === "word_to_def") {
+  if (mode === "type_def") {
+    speechText = "Type out the complete definition word-for-word!";
+  } else if (mode === "sentence_type") {
+    speechText = "Transcribe the context sentence with punctuation!";
+  } else if (mode === "word_to_def") {
     speechText = "Explain this word in your own words!";
   } else if (mode === "fill_blank") {
     speechText = "Fill in the missing word in the sentence!";
@@ -122,7 +133,7 @@ function WordExercise({
     speechText =
       mode === "word_to_def"
         ? gradeFeedback?.feedback || `Notice the key meaning of "${word.word}".`
-        : `Almost! The correct word is "${word.word}".`;
+        : `Almost! The target was "${isSentenceMode ? sentenceTarget : word.word}".`;
   }
 
   const handleMistake = () => {
@@ -131,8 +142,9 @@ function WordExercise({
 
   const handleHint = () => {
     setUsedHint(true);
+    const target = isSentenceMode ? sentenceTarget : word.word;
     const nextRevealedLength = revealedLetters.length + 1;
-    const hintStr = word.word.slice(0, nextRevealedLength);
+    const hintStr = target.slice(0, nextRevealedLength);
     setRevealedLetters(hintStr);
     if (!typedText.startsWith(hintStr)) {
       setTypedText(hintStr);
@@ -145,6 +157,7 @@ function WordExercise({
     const startedAt = startTimeRef.current || Date.now();
     const timeMs = Math.max(200, Date.now() - startedAt);
 
+    // 1. Word to Definition AI mode
     if (mode === "word_to_def") {
       setIsGrading(true);
       try {
@@ -199,7 +212,41 @@ function WordExercise({
       return;
     }
 
-    // Standard word typing checking
+    // 2. Full Definition or Sentence Transcription Mode
+    if (isSentenceMode) {
+      const isExactMatch =
+        typedText.trim().toLowerCase() === sentenceTarget.trim().toLowerCase();
+      const accuracy = Math.max(
+        0,
+        Math.min(
+          100,
+          Math.round(((sentenceTarget.length - mistakeCount) / sentenceTarget.length) * 100),
+        ),
+      );
+      const isPassed = isExactMatch || accuracy >= 85;
+
+      const earned = isPassed ? 25 + Math.round(accuracy * 0.1) : 0;
+      setPointsEarned(earned);
+
+      if (isPassed) {
+        playCorrectSound();
+        setStatus("correct");
+      } else {
+        playWrongSound();
+        setStatus("wrong");
+      }
+
+      pendingResultRef.current = {
+        word,
+        correct: isPassed,
+        pointsEarned: earned,
+        timeMs,
+        accuracy,
+      };
+      return;
+    }
+
+    // 3. Standard Word Typing Modes
     const isCorrect = isWordAnswerCorrect(word.word, typedText);
     const accuracy = calculateTypingAccuracy(word.word.length, mistakeCount);
 
@@ -279,7 +326,7 @@ function WordExercise({
           pointsEarned={pointsEarned}
         />
 
-        {/* Word to Definition textarea input */}
+        {/* Input area rendered according to mode */}
         {mode === "word_to_def" ? (
           <div className="flex w-full flex-col gap-3">
             <textarea
@@ -322,6 +369,15 @@ function WordExercise({
               </div>
             )}
           </div>
+        ) : isSentenceMode ? (
+          <SentenceTypingArea
+            targetText={sentenceTarget}
+            typedText={typedText}
+            onChange={setTypedText}
+            onSubmit={status === "idle" ? handleCheck : handleNext}
+            onMistake={handleMistake}
+            disabled={status !== "idle"}
+          />
         ) : (
           <TypingArea
             targetWord={word.word}
@@ -348,7 +404,7 @@ function WordExercise({
         hintDisabled={
           mode === "word_to_def" ||
           status !== "idle" ||
-          revealedLetters.length >= word.word.length
+          revealedLetters.length >= (isSentenceMode ? sentenceTarget.length : word.word.length)
         }
       />
     </>
