@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { calculateTypingAccuracy, isWordAnswerCorrect } from "@/core/checkAnswer";
 import { calculateScore } from "@/core/scoring";
+import { calculateWpm } from "@/core/wpm";
 import { createClient } from "@/lib/supabase/client";
 import { recordWordAttempt } from "@/lib/srs/recordAttempt";
 import { playCorrectSound, playWrongSound } from "@/lib/sounds";
@@ -12,12 +13,13 @@ import { SpeechBubble } from "@/components/kalding/SpeechBubble";
 import { TopBar } from "@/components/layout/TopBar";
 import { Chip } from "@/components/ui/Chip";
 import { FeedbackBar } from "@/components/practice/FeedbackBar";
-import { PromptCard } from "@/components/practice/PromptCard";
+import { PromptCard, type PracticeMode } from "@/components/practice/PromptCard";
 import { SessionSummary, type SessionResult } from "@/components/practice/SessionSummary";
 import { TypingArea } from "@/components/practice/TypingArea";
 
 export type PracticeEngineProps = {
   words: Tables<"words">[];
+  mode?: PracticeMode;
   modeName: string;
   initialPoints?: number;
   initialStreak?: number;
@@ -26,18 +28,39 @@ export type PracticeEngineProps = {
 
 type WordExerciseProps = {
   word: Tables<"words">;
+  mode: PracticeMode;
   modeName: string;
   streakDays: number;
   onFinishWord: (result: SessionResult) => void;
+  liveWpm?: number;
 };
 
-function WordExercise({ word, modeName, streakDays, onFinishWord }: WordExerciseProps) {
+interface GradeResponse {
+  score: number;
+  passed: boolean;
+  feedback: string;
+  keyConceptsMatched: string[];
+  missingConcepts: string[];
+  gradedBy?: string;
+}
+
+function WordExercise({
+  word,
+  mode,
+  modeName,
+  streakDays,
+  onFinishWord,
+  liveWpm,
+}: WordExerciseProps) {
   const [typedText, setTypedText] = useState("");
+  const [definitionExplanation, setDefinitionExplanation] = useState("");
   const [status, setStatus] = useState<"idle" | "correct" | "wrong">("idle");
   const [mistakeCount, setMistakeCount] = useState(0);
   const [usedHint, setUsedHint] = useState(false);
   const [revealedLetters, setRevealedLetters] = useState("");
   const [pointsEarned, setPointsEarned] = useState(0);
+  const [isGrading, setIsGrading] = useState(false);
+  const [gradeFeedback, setGradeFeedback] = useState<GradeResponse | null>(null);
 
   const startTimeRef = useRef<number>(0);
   const pendingResultRef = useRef<SessionResult | null>(null);
@@ -64,19 +87,42 @@ function WordExercise({ word, modeName, streakDays, onFinishWord }: WordExercise
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [status, handleNext]);
 
-  // Kalding mood mapping
+  // Kalding mood and speech mapping per mode
   let mood: KaldingMood = "neutral";
-  let speechText = "Type the word that matches the definition!";
+  let speechText = "";
 
-  if (usedHint && status === "idle") {
+  if (mode === "word_to_def") {
+    speechText = "Explain this word in your own words!";
+  } else if (mode === "fill_blank") {
+    speechText = "Fill in the missing word in the sentence!";
+  } else if (mode === "dictation") {
+    speechText = "Listen to the pronunciation and type what you hear!";
+  } else if (mode === "speed_run") {
+    speechText = "Speed Run! Type quickly and accurately.";
+  } else {
+    speechText = "Type the word that matches the definition!";
+  }
+
+  if (isGrading) {
+    mood = "thinking";
+    speechText = "Kalding is evaluating your explanation...";
+  } else if (usedHint && status === "idle") {
     mood = "thinking";
     speechText = `Here's a clue: starts with "${revealedLetters}"!`;
   } else if (status === "correct") {
     mood = "happy";
-    speechText = `Spot on! +${pointsEarned} points!`;
+    speechText =
+      mode === "word_to_def"
+        ? gradeFeedback?.feedback || "Great explanation! You captured the definition."
+        : pointsEarned > 15
+          ? "Magnificent typing! Perfect speed and accuracy!"
+          : "Spot on! That's correct.";
   } else if (status === "wrong") {
     mood = "oops";
-    speechText = `Good effort! The correct word was "${word.word}".`;
+    speechText =
+      mode === "word_to_def"
+        ? gradeFeedback?.feedback || `Notice the key meaning of "${word.word}".`
+        : `Almost! The correct word is "${word.word}".`;
   }
 
   const handleMistake = () => {
@@ -93,11 +139,67 @@ function WordExercise({ word, modeName, streakDays, onFinishWord }: WordExercise
     }
   };
 
-  const handleCheck = () => {
-    if (status !== "idle") return;
+  const handleCheck = async () => {
+    if (status !== "idle" || isGrading) return;
 
     const startedAt = startTimeRef.current || Date.now();
     const timeMs = Math.max(200, Date.now() - startedAt);
+
+    if (mode === "word_to_def") {
+      setIsGrading(true);
+      try {
+        const res = await fetch("/api/grade-definition", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            targetWord: word.word,
+            officialDefinition: word.definition,
+            userDefinition: definitionExplanation,
+            partOfSpeech: word.part_of_speech,
+            exampleSentence: word.example_sentence,
+          }),
+        });
+
+        const data: GradeResponse = await res.json();
+        setGradeFeedback(data);
+
+        const earned = data.passed ? Math.max(10, Math.round(data.score / 5)) : 0;
+        setPointsEarned(earned);
+
+        if (data.passed) {
+          playCorrectSound();
+          setStatus("correct");
+        } else {
+          playWrongSound();
+          setStatus("wrong");
+        }
+
+        pendingResultRef.current = {
+          word,
+          correct: data.passed,
+          pointsEarned: earned,
+          timeMs,
+          accuracy: data.score,
+        };
+      } catch (err) {
+        console.error("Failed to grade definition:", err);
+        playCorrectSound();
+        setStatus("correct");
+        setPointsEarned(10);
+        pendingResultRef.current = {
+          word,
+          correct: true,
+          pointsEarned: 10,
+          timeMs,
+          accuracy: 80,
+        };
+      } finally {
+        setIsGrading(false);
+      }
+      return;
+    }
+
+    // Standard word typing checking
     const isCorrect = isWordAnswerCorrect(word.word, typedText);
     const accuracy = calculateTypingAccuracy(word.word.length, mistakeCount);
 
@@ -151,9 +253,16 @@ function WordExercise({ word, modeName, streakDays, onFinishWord }: WordExercise
   return (
     <>
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center gap-6 px-4 py-6 sm:py-8">
-        <Chip variant="mode" className="text-xs tracking-wider uppercase">
-          {modeName}
-        </Chip>
+        <div className="flex items-center gap-3">
+          <Chip variant="mode" className="text-xs tracking-wider uppercase">
+            {modeName}
+          </Chip>
+          {liveWpm !== undefined && liveWpm > 0 && (
+            <span className="border-primary/40 bg-primary/10 text-primary animate-pulse rounded-full border px-3 py-0.5 text-xs font-black">
+              ⚡ {liveWpm} WPM
+            </span>
+          )}
+        </div>
 
         <div className="flex items-center gap-3">
           <Kalding mood={mood} size={92} title={`Kalding is ${mood}`} />
@@ -164,29 +273,83 @@ function WordExercise({ word, modeName, streakDays, onFinishWord }: WordExercise
 
         <PromptCard
           word={word}
+          mode={mode}
           status={status}
           revealedLetters={revealedLetters}
           pointsEarned={pointsEarned}
         />
 
-        <TypingArea
-          targetWord={word.word}
-          typedText={typedText}
-          onChange={setTypedText}
-          onSubmit={status === "idle" ? handleCheck : handleNext}
-          onMistake={handleMistake}
-          disabled={status !== "idle"}
-        />
+        {/* Word to Definition textarea input */}
+        {mode === "word_to_def" ? (
+          <div className="flex w-full flex-col gap-3">
+            <textarea
+              value={definitionExplanation}
+              onChange={(e) => setDefinitionExplanation(e.target.value)}
+              placeholder={`Describe in your own words what "${word.word}" means...`}
+              rows={3}
+              disabled={status !== "idle" || isGrading}
+              className="border-border bg-card text-foreground focus:border-primary w-full resize-none rounded-2xl border-2 p-4 text-base font-medium transition-colors focus:outline-none"
+            />
+
+            {gradeFeedback && status !== "idle" && (
+              <div
+                className={`flex flex-col gap-2 rounded-2xl border-2 p-4 ${
+                  gradeFeedback.passed
+                    ? "border-success-border bg-success-bg/40 text-success-fg"
+                    : "border-warning-border bg-warning-bg/40 text-warning-fg"
+                }`}
+              >
+                <div className="flex items-center justify-between font-black text-sm">
+                  <span>Score: {gradeFeedback.score}%</span>
+                  <span className="text-xs font-bold uppercase">
+                    Graded by {gradeFeedback.gradedBy === "ai" ? "AI Coach" : "Local Engine"}
+                  </span>
+                </div>
+                <p className="text-xs font-semibold">{gradeFeedback.feedback}</p>
+                {gradeFeedback.keyConceptsMatched.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1 text-xs">
+                    <span className="font-bold">Matched concepts:</span>
+                    {gradeFeedback.keyConceptsMatched.map((c) => (
+                      <span
+                        key={c}
+                        className="border-success-border/60 bg-success-bg rounded-md border px-2 py-0.5 text-[11px] font-extrabold"
+                      >
+                        ✓ {c}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <TypingArea
+            targetWord={word.word}
+            typedText={typedText}
+            onChange={setTypedText}
+            onSubmit={status === "idle" ? handleCheck : handleNext}
+            onMistake={handleMistake}
+            disabled={status !== "idle"}
+          />
+        )}
       </main>
 
       <FeedbackBar
         status={status}
-        canCheck={typedText.trim().length > 0}
+        canCheck={
+          mode === "word_to_def"
+            ? definitionExplanation.trim().length >= 4 && !isGrading
+            : typedText.trim().length > 0
+        }
         onCheck={handleCheck}
         onSkip={handleSkip}
         onHint={handleHint}
         onNext={handleNext}
-        hintDisabled={status !== "idle" || revealedLetters.length >= word.word.length}
+        hintDisabled={
+          mode === "word_to_def" ||
+          status !== "idle" ||
+          revealedLetters.length >= word.word.length
+        }
       />
     </>
   );
@@ -194,6 +357,7 @@ function WordExercise({ word, modeName, streakDays, onFinishWord }: WordExercise
 
 export function PracticeEngine({
   words,
+  mode = "def_to_word",
   modeName,
   initialPoints = 0,
   initialStreak = 0,
@@ -203,6 +367,17 @@ export function PracticeEngine({
   const [sessionPoints, setSessionPoints] = useState(0);
   const [results, setResults] = useState<SessionResult[]>([]);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [totalTypedChars, setTotalTypedChars] = useState(0);
+  const [elapsedSeconds, setElapsedSeconds] = useState(1);
+
+  // Timer interval for speed run mode (pure React state update)
+  useEffect(() => {
+    if (mode !== "speed_run") return;
+    const interval = setInterval(() => {
+      setElapsedSeconds((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [mode]);
 
   const supabase = createClient();
   const currentWord = words[currentIndex];
@@ -210,6 +385,7 @@ export function PracticeEngine({
   const handleFinishWord = useCallback(
     (res: SessionResult) => {
       setSessionPoints((prev) => prev + res.pointsEarned);
+      setTotalTypedChars((prev) => prev + res.word.word.length);
       setResults((prev) => [...prev, res]);
 
       // Save attempt to Supabase and update SRS user_words progress
@@ -218,7 +394,7 @@ export function PracticeEngine({
           supabase,
           userId,
           wordId: res.word.id,
-          mode: "def_to_word",
+          mode,
           correct: res.correct,
           typedText: res.word.word,
           timeMs: res.timeMs,
@@ -236,8 +412,15 @@ export function PracticeEngine({
         setIsCompleted(true);
       }
     },
-    [currentIndex, words.length, userId, supabase],
+    [currentIndex, words.length, userId, supabase, mode],
   );
+
+  // Live WPM calculation for Speed Run
+  const liveWpmResult = calculateWpm({
+    charactersTyped: totalTypedChars,
+    errors: results.filter((r) => !r.correct).length * 4,
+    timeMs: Math.max(1000, elapsedSeconds * 1000),
+  });
 
   if (!currentWord || isCompleted) {
     return (
@@ -276,9 +459,11 @@ export function PracticeEngine({
       <WordExercise
         key={currentWord.id}
         word={currentWord}
+        mode={mode}
         modeName={modeName}
         streakDays={initialStreak}
         onFinishWord={handleFinishWord}
+        liveWpm={mode === "speed_run" ? liveWpmResult.netWpm : undefined}
       />
     </div>
   );

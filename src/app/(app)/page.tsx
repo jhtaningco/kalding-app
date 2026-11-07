@@ -26,14 +26,14 @@ export default async function HomePage() {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-6 px-4 py-8 text-center sm:py-12">
-      <Chip variant="mode">Phase 5: Spaced Repetition & Review Queue (SRS)</Chip>
+      <Chip variant="mode">Phase 6: Practice Modes & Arena</Chip>
 
       {/* Greeting and Mascot */}
       <div className="flex flex-col items-center gap-4 sm:flex-row sm:text-left">
         <Kalding mood="happy" size={130} title="Kalding is happy to see you" />
         <SpeechBubble tail="left" className="text-base sm:text-lg">
-          Mabuhay, <strong className="text-primary">{displayName}</strong>! Your profile
-          and spaced repetition memory queue are ready.
+          Mabuhay, <strong className="text-primary">{displayName}</strong>! All 5 practice
+          modes and your spaced repetition queue are active.
         </SpeechBubble>
       </div>
 
@@ -41,24 +41,23 @@ export default async function HomePage() {
       <div className="border-primary/40 bg-card flex w-full flex-col items-center gap-3 rounded-3xl border-2 p-6 shadow-[0_4px_0_var(--secondary-shadow)]">
         <div className="flex flex-col items-center gap-1">
           <span className="text-muted text-xs font-extrabold tracking-wider uppercase">
-            Ready for your typing practice?
+            Choose Your Challenge
           </span>
           <h2 className="text-foreground text-2xl font-extrabold sm:text-3xl">
-            Definition → Word
+            Practice Arena
           </h2>
           <p className="text-muted max-w-md text-sm">
-            Read the definition, type the word, and test your vocabulary with live letter
-            feedback!
+            5 interactive modes: Definition, Fill in the Blank, Dictation, Speed Run, and AI-Graded Word Explanation!
           </p>
         </div>
 
         <div className="flex flex-wrap justify-center gap-3 pt-2">
           <ButtonLink
-            href="/practice/def_to_word"
+            href="/practice"
             size="lg"
             className="min-w-[220px] text-lg"
           >
-            Start 10-Word Session
+            Enter Practice Arena
           </ButtonLink>
           <ButtonLink
             href="/review"

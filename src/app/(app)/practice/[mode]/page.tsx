@@ -1,15 +1,79 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PracticeEngine } from "./practice-engine";
+import type { PracticeMode } from "@/components/practice/PromptCard";
 import type { Tables } from "@/types/database";
 
-export const metadata: Metadata = {
-  title: "Practice: Definition → Word | Kalding English",
-  description:
-    "Type the word that matches the definition to learn vocabulary and earn points.",
+const MODE_CONFIGS: Record<
+  string,
+  {
+    modeKey: PracticeMode;
+    name: string;
+    description: string;
+  }
+> = {
+  def_to_word: {
+    modeKey: "def_to_word",
+    name: "Definition → Word",
+    description: "Read the definition and type the vocabulary word.",
+  },
+  "def-to-word": {
+    modeKey: "def_to_word",
+    name: "Definition → Word",
+    description: "Read the definition and type the vocabulary word.",
+  },
+  fill_blank: {
+    modeKey: "fill_blank",
+    name: "Fill in the Blank",
+    description: "Complete the example sentence with the missing word.",
+  },
+  "fill-blank": {
+    modeKey: "fill_blank",
+    name: "Fill in the Blank",
+    description: "Complete the example sentence with the missing word.",
+  },
+  dictation: {
+    modeKey: "dictation",
+    name: "Audio Dictation",
+    description: "Listen to the word pronunciation and type what you hear.",
+  },
+  speed_run: {
+    modeKey: "speed_run",
+    name: "Speed Run (WPM)",
+    description: "Rapid typing challenge tracking your WPM and accuracy.",
+  },
+  "speed-run": {
+    modeKey: "speed_run",
+    name: "Speed Run (WPM)",
+    description: "Rapid typing challenge tracking your WPM and accuracy.",
+  },
+  word_to_def: {
+    modeKey: "word_to_def",
+    name: "Word → Definition (AI Graded)",
+    description: "Explain the word in your own words and receive AI feedback.",
+  },
+  "word-to-def": {
+    modeKey: "word_to_def",
+    name: "Word → Definition (AI Graded)",
+    description: "Explain the word in your own words and receive AI feedback.",
+  },
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ mode: string }>;
+}): Promise<Metadata> {
+  const { mode } = await params;
+  const config = MODE_CONFIGS[mode];
+  return {
+    title: config ? `${config.name} | Kalding English` : "Practice | Kalding English",
+    description: config?.description || "Interactive typing practice modes.",
+  };
+}
 
 export default async function PracticePage({
   params,
@@ -17,6 +81,12 @@ export default async function PracticePage({
   params: Promise<{ mode: string }>;
 }) {
   const { mode } = await params;
+  const config = MODE_CONFIGS[mode];
+
+  if (!config) {
+    notFound();
+  }
+
   const supabase = await createClient();
 
   const {
@@ -74,15 +144,11 @@ export default async function PracticePage({
     }
   }
 
-  const modeName =
-    mode === "def_to_word" || mode === "def-to-word"
-      ? "Definition → Word"
-      : mode.replace(/[-_]/g, " ");
-
   return (
     <PracticeEngine
       words={sessionWords}
-      modeName={modeName}
+      mode={config.modeKey}
+      modeName={config.name}
       initialPoints={initialPoints}
       initialStreak={1}
       userId={user?.id}
