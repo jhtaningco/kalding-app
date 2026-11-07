@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { calculateTypingAccuracy, isWordAnswerCorrect } from "@/core/checkAnswer";
 import { calculateScore } from "@/core/scoring";
 import { createClient } from "@/lib/supabase/client";
+import { recordWordAttempt } from "@/lib/srs/recordAttempt";
 import { playCorrectSound, playWrongSound } from "@/lib/sounds";
 import type { Tables } from "@/types/database";
 import { Kalding, type KaldingMood } from "@/components/kalding/Kalding";
@@ -211,24 +212,22 @@ export function PracticeEngine({
       setSessionPoints((prev) => prev + res.pointsEarned);
       setResults((prev) => [...prev, res]);
 
-      // Save attempt to Supabase asynchronously
+      // Save attempt to Supabase and update SRS user_words progress
       if (userId) {
-        supabase
-          .from("attempts")
-          .insert({
-            user_id: userId,
-            word_id: res.word.id,
-            mode: "def_to_word",
-            correct: res.correct,
-            typed_text: res.word.word,
-            time_ms: res.timeMs,
-            accuracy: res.accuracy,
-            points_earned: res.pointsEarned,
-            language: "en",
-          })
-          .then(({ error }) => {
-            if (error) console.warn("Failed to persist attempt:", error.message);
-          });
+        recordWordAttempt({
+          supabase,
+          userId,
+          wordId: res.word.id,
+          mode: "def_to_word",
+          correct: res.correct,
+          typedText: res.word.word,
+          timeMs: res.timeMs,
+          accuracy: res.accuracy,
+          pointsEarned: res.pointsEarned,
+          language: res.word.language || "en",
+        }).catch((err) => {
+          console.warn("Failed to persist attempt/SRS:", err);
+        });
       }
 
       if (currentIndex + 1 < words.length) {

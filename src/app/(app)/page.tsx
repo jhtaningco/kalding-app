@@ -26,14 +26,14 @@ export default async function HomePage() {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-6 px-4 py-8 text-center sm:py-12">
-      <Chip variant="mode">Phase 4: Practice Mode (Definition → Word)</Chip>
+      <Chip variant="mode">Phase 5: Spaced Repetition & Review Queue (SRS)</Chip>
 
       {/* Greeting and Mascot */}
       <div className="flex flex-col items-center gap-4 sm:flex-row sm:text-left">
         <Kalding mood="happy" size={130} title="Kalding is happy to see you" />
         <SpeechBubble tail="left" className="text-base sm:text-lg">
           Mabuhay, <strong className="text-primary">{displayName}</strong>! Your profile
-          is ready and authenticated.
+          and spaced repetition memory queue are ready.
         </SpeechBubble>
       </div>
 
@@ -52,13 +52,23 @@ export default async function HomePage() {
           </p>
         </div>
 
-        <ButtonLink
-          href="/practice/def_to_word"
-          size="lg"
-          className="mt-2 min-w-[240px] text-lg"
-        >
-          Start 10-Word Session
-        </ButtonLink>
+        <div className="flex flex-wrap justify-center gap-3 pt-2">
+          <ButtonLink
+            href="/practice/def_to_word"
+            size="lg"
+            className="min-w-[220px] text-lg"
+          >
+            Start 10-Word Session
+          </ButtonLink>
+          <ButtonLink
+            href="/review"
+            variant="secondary"
+            size="lg"
+            className="min-w-[200px] text-lg"
+          >
+            Review Queue (SRS)
+          </ButtonLink>
+        </div>
       </div>
 
       {/* Profile Details Card */}
@@ -110,10 +120,13 @@ export default async function HomePage() {
 
         <div className="border-border mt-2 flex flex-wrap items-center justify-between gap-3 border-t-2 pt-4">
           <div className="flex flex-wrap gap-2">
-            <ButtonLink href="/words" size="sm">
-              Explore Word Bank
+            <ButtonLink href="/review" size="sm">
+              Review Queue
             </ButtonLink>
-            <ButtonLink href="/design" variant="secondary" size="sm">
+            <ButtonLink href="/words" variant="secondary" size="sm">
+              Word Bank
+            </ButtonLink>
+            <ButtonLink href="/design" variant="ghost" size="sm">
               Design System
             </ButtonLink>
           </div>
@@ -127,8 +140,7 @@ export default async function HomePage() {
       </Card>
 
       <p className="text-muted max-w-md text-xs">
-        In Phase 3, we will seed starter words and let you add your own vocabulary into
-        the database!
+        Words practiced in typing sessions are scheduled with SM-2 spaced repetition to ensure long-term retention.
       </p>
     </div>
   );
