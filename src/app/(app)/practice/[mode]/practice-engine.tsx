@@ -82,17 +82,7 @@ function WordExercise({
     }
   }, [onFinishWord]);
 
-  // Global Enter listener to advance when in feedback state
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && status !== "idle") {
-        e.preventDefault();
-        handleNext();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [status, handleNext]);
+
 
   // Kalding mood and speech mapping per mode
   let mood: KaldingMood = "neutral";
@@ -140,7 +130,7 @@ function WordExercise({
     setMistakeCount((prev) => prev + 1);
   };
 
-  const handleHint = () => {
+  const handleHint = useCallback(() => {
     setUsedHint(true);
     const target = isSentenceMode ? sentenceTarget : word.word;
     const nextRevealedLength = revealedLetters.length + 1;
@@ -149,7 +139,7 @@ function WordExercise({
     if (!typedText.startsWith(hintStr)) {
       setTypedText(hintStr);
     }
-  };
+  }, [isSentenceMode, sentenceTarget, word.word, revealedLetters, typedText]);
 
   const handleCheck = async (overrideText?: string) => {
     if (status !== "idle" || isGrading) return;
@@ -279,7 +269,7 @@ function WordExercise({
     };
   };
 
-  const handleSkip = () => {
+  const handleSkip = useCallback(() => {
     if (status !== "idle") return;
 
     playWrongSound();
@@ -296,7 +286,31 @@ function WordExercise({
       timeMs,
       accuracy: 0,
     };
-  };
+  }, [status, word]);
+
+  // Global Keyboard shortcuts:
+  // - When answered: Enter or Space advances to next exercise
+  // - When answering: Esc or Alt+S skips word, Alt+H reveals hint
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (status !== "idle") {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleNext();
+        }
+      } else {
+        if (e.key === "Escape" || (e.altKey && (e.key === "s" || e.key === "S"))) {
+          e.preventDefault();
+          handleSkip();
+        } else if (e.altKey && (e.key === "h" || e.key === "H")) {
+          e.preventDefault();
+          handleHint();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [status, handleNext, handleSkip, handleHint]);
 
   return (
     <>
@@ -307,7 +321,7 @@ function WordExercise({
           </Chip>
           {liveWpm !== undefined && liveWpm > 0 && (
             <span className="border-primary/40 bg-primary/10 text-primary animate-pulse rounded-full border px-3 py-0.5 text-xs font-black">
-              ⚡ {liveWpm} WPM
+              âš¡ {liveWpm} WPM
             </span>
           )}
         </div>
@@ -362,7 +376,7 @@ function WordExercise({
                         key={c}
                         className="border-success-border/60 bg-success-bg rounded-md border px-2 py-0.5 text-[11px] font-extrabold"
                       >
-                        ✓ {c}
+                        âœ“ {c}
                       </span>
                     ))}
                   </div>

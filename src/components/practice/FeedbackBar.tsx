@@ -37,17 +37,19 @@ export function FeedbackBar({
           <>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="md" onClick={onSkip} aria-label="Skip word">
-                Skip
+                <span>Skip</span>
+                <span className="hidden text-[11px] opacity-60 sm:inline">[Esc]</span>
               </Button>
               <Button
                 variant="secondary"
                 size="md"
                 onClick={onHint}
                 disabled={hintDisabled}
-                title="Reveal a letter hint"
+                title="Reveal a letter hint (Alt+H)"
               >
                 <LightbulbIcon size={18} />
                 <span className="hidden sm:inline">Hint</span>
+                <span className="hidden text-[11px] opacity-60 md:inline">[Alt+H]</span>
               </Button>
             </div>
 
@@ -58,7 +60,8 @@ export function FeedbackBar({
               onClick={onCheck}
               className="min-w-[140px]"
             >
-              Check
+              <span>Check</span>
+              <span className="hidden text-xs opacity-75 sm:inline">[Enter]</span>
             </Button>
           </>
         ) : (

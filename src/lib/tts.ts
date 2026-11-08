@@ -1,10 +1,27 @@
 /**
  * Browser Text-To-Speech helper using the Web Speech API (SpeechSynthesis).
  * Gracefully does nothing in SSR or unsupported environments.
+ * Synchronizes with user voice preferences saved in localStorage.
  */
+
+const VOICE_STORAGE_KEY = "kalding_voice_enabled";
+
+export function isVoiceEnabled(): boolean {
+  if (typeof window === "undefined") return true;
+  return localStorage.getItem(VOICE_STORAGE_KEY) !== "false";
+}
+
+export function setVoiceEnabled(enabled: boolean): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(VOICE_STORAGE_KEY, enabled ? "true" : "false");
+}
 
 export function speak(text: string, options?: { lang?: string; rate?: number }) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+    return;
+  }
+
+  if (!isVoiceEnabled()) {
     return;
   }
 

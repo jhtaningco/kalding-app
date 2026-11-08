@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Rounded Background Badge -->
+  <rect width="64" height="64" rx="16" fill="#1CB0F6"/>
+  
+  <!-- Horns -->
+  <path d="M22 20C19 13 14 11 12 13C10 15 13 21 17 24" stroke="#854D0E" stroke-width="3" stroke-linecap="round" fill="#CA8A04"/>
+  <path d="M42 20C45 13 50 11 52 13C54 15 51 21 47 24" stroke="#854D0E" stroke-width="3" stroke-linecap="round" fill="#CA8A04"/>
+
+  <!-- Goat Face Base -->
+  <ellipse cx="32" cy="36" rx="16" ry="14" fill="#F8FAFC" stroke="#0F172A" stroke-width="2.5"/>
+
+  <!-- Ears -->
+  <ellipse cx="14" cy="32" rx="6" ry="3.5" transform="rotate(-15 14 32)" fill="#F8FAFC" stroke="#0F172A" stroke-width="2"/>
+  <ellipse cx="14" cy="32" rx="3.5" ry="1.8" transform="rotate(-15 14 32)" fill="#FDA4AF"/>
+
+  <ellipse cx="50" cy="32" rx="6" ry="3.5" transform="rotate(15 50 32)" fill="#F8FAFC" stroke="#0F172A" stroke-width="2"/>
+  <ellipse cx="50" cy="32" rx="3.5" ry="1.8" transform="rotate(15 50 32)" fill="#FDA4AF"/>
+
+  <!-- Eyes -->
+  <ellipse cx="26" cy="33" rx="2.5" ry="3.2" fill="#0F172A"/>
+  <circle cx="27" cy="31.8" r="0.9" fill="#FFFFFF"/>
+
+  <ellipse cx="38" cy="33" rx="2.5" ry="3.2" fill="#0F172A"/>
+  <circle cx="39" cy="31.8" r="0.9" fill="#FFFFFF"/>
+
+  <!-- Snout / Nose -->
+  <ellipse cx="32" cy="42" rx="4.5" ry="3" fill="#E2E8F0"/>
+  <circle cx="30.5" cy="41.8" r="0.9" fill="#475569"/>
+  <circle cx="33.5" cy="41.8" r="0.9" fill="#475569"/>
+
+  <!-- Happy Smile -->
+  <path d="M29 44C30.5 45.8 33.5 45.8 35 44" stroke="#0F172A" stroke-width="1.8" stroke-linecap="round"/>
+
+  <!-- Little Goat Beard -->
+  <path d="M30 49C31 52 33 52 34 49" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" fill="none"/>
+</svg>

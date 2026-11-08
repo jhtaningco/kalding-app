@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useTheme } from "@/hooks/useTheme";
+import { isSoundEnabled as getSoundEnabled, setSoundEnabled as saveSoundEnabled } from "@/lib/sounds";
+import { isVoiceEnabled as getVoiceEnabled, setVoiceEnabled as saveVoiceEnabled } from "@/lib/tts";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
@@ -40,7 +42,20 @@ export function SettingsForm({
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [dailyGoal, setDailyGoal] = useState(initialDailyGoal);
   const [language] = useState(initialLanguage);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(() => getSoundEnabled());
+  const [voiceEnabled, setVoiceEnabled] = useState(() => getVoiceEnabled());
+
+  const handleToggleSound = () => {
+    const nextVal = !soundEnabled;
+    setSoundEnabled(nextVal);
+    saveSoundEnabled(nextVal);
+  };
+
+  const handleToggleVoice = () => {
+    const nextVal = !voiceEnabled;
+    setVoiceEnabled(nextVal);
+    saveVoiceEnabled(nextVal);
+  };
 
   const [isSaving, setIsSaving] = useState(false);
   const [feedback, setFeedback] = useState<{
@@ -210,7 +225,7 @@ export function SettingsForm({
             </div>
             <button
               type="button"
-              onClick={() => setSoundEnabled(!soundEnabled)}
+              onClick={handleToggleSound}
               className={`flex items-center gap-2 rounded-xl border-2 px-3.5 py-2 text-xs font-black transition-colors ${
                 soundEnabled
                   ? "border-success-border bg-success-bg text-success-fg"
@@ -219,6 +234,26 @@ export function SettingsForm({
             >
               <SpeakerIcon size={16} />
               {soundEnabled ? "Enabled" : "Muted"}
+            </button>
+          </div>
+
+          {/* Voice Pronunciation TTS Row */}
+          <div className="flex items-center justify-between border-t border-border/60 pt-3">
+            <div className="flex flex-col">
+              <span className="text-foreground text-sm font-bold">Voice Pronunciation</span>
+              <span className="text-muted text-xs">Speak words and example sentences using text-to-speech</span>
+            </div>
+            <button
+              type="button"
+              onClick={handleToggleVoice}
+              className={`flex items-center gap-2 rounded-xl border-2 px-3.5 py-2 text-xs font-black transition-colors ${
+                voiceEnabled
+                  ? "border-success-border bg-success-bg text-success-fg"
+                  : "border-border bg-card text-muted"
+              }`}
+            >
+              <SpeakerIcon size={16} />
+              {voiceEnabled ? "Enabled" : "Muted"}
             </button>
           </div>
         </Card>

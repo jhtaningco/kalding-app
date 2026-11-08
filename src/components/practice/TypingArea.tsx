@@ -71,6 +71,7 @@ export function TypingArea({
       <input
         ref={inputRef}
         type="text"
+        inputMode="text"
         value={typedText}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
