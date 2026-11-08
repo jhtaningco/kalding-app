@@ -1,0 +1,1202 @@
+[
+  {
+    "word": "accomplish",
+    "part_of_speech": "verb",
+    "definition": "to succeed in doing or completing something",
+    "example_sentence": "She worked hard to accomplish her goals for the year.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "accurate",
+    "part_of_speech": "adjective",
+    "definition": "correct, exact, and without any mistakes",
+    "example_sentence": "His memory of the events was surprisingly accurate.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "adapt",
+    "part_of_speech": "verb",
+    "definition": "to change behavior in order to deal successfully with a new situation",
+    "example_sentence": "Living in a foreign country taught him to adapt quickly.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "anxious",
+    "part_of_speech": "adjective",
+    "definition": "feeling worried, nervous, or uneasy",
+    "example_sentence": "He felt anxious before speaking in front of the large audience.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "appreciate",
+    "part_of_speech": "verb",
+    "definition": "to recognize the full worth of or be grateful for something",
+    "example_sentence": "I truly appreciate all the help you gave me during the move.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "approach",
+    "part_of_speech": "noun",
+    "definition": "a way of dealing with something or somebody",
+    "example_sentence": "We need to find a new approach to solve this coding problem.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "assume",
+    "part_of_speech": "verb",
+    "definition": "to think that something is true without having proof",
+    "example_sentence": "Never assume anything without checking the facts first.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "awkward",
+    "part_of_speech": "adjective",
+    "definition": "causing or feeling embarrassment or a lack of comfort",
+    "example_sentence": "There was an awkward silence after the controversial question.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "balance",
+    "part_of_speech": "noun",
+    "definition": "a situation in which different things exist in equal or proper amounts",
+    "example_sentence": "Finding a balance between work and rest is key to health.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "barrier",
+    "part_of_speech": "noun",
+    "definition": "a problem, rule, or object that prevents progress",
+    "example_sentence": "Language is often a barrier when moving to a new country.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "benefit",
+    "part_of_speech": "noun",
+    "definition": "an advantage or positive result that something gives you",
+    "example_sentence": "Regular typing practice has the benefit of boosting your speed.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "brave",
+    "part_of_speech": "adjective",
+    "definition": "ready to face and endure danger or pain without fear",
+    "example_sentence": "It was brave of him to admit his mistake in public.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "calm",
+    "part_of_speech": "adjective",
+    "definition": "not excited, nervous, or upset; tranquil",
+    "example_sentence": "She remained calm despite the chaotic situation around her.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "capture",
+    "part_of_speech": "verb",
+    "definition": "to catch or represent something successfully",
+    "example_sentence": "The photographer managed to capture the sunset perfectly.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "celebrate",
+    "part_of_speech": "verb",
+    "definition": "to do something enjoyable for an important event or achievement",
+    "example_sentence": "We gathered to celebrate his promotion at work.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "challenge",
+    "part_of_speech": "noun",
+    "definition": "a new or difficult task that tests somebody's ability and skill",
+    "example_sentence": "Learning a new programming language is an exciting challenge.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "clumsy",
+    "part_of_speech": "adjective",
+    "definition": "moving or doing things in a careless, awkward way",
+    "example_sentence": "He was clumsy and accidentally knocked over the water glass.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "combine",
+    "part_of_speech": "verb",
+    "definition": "to join two or more things together to form a single unit",
+    "example_sentence": "The recipe combines sweet and savory flavors harmoniously.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "confident",
+    "part_of_speech": "adjective",
+    "definition": "feeling sure about your own ability to do things and be successful",
+    "example_sentence": "She felt confident that she would pass the typing exam.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "confuse",
+    "part_of_speech": "verb",
+    "definition": "to make somebody unable to think clearly or understand something",
+    "example_sentence": "The complicated instructions served only to confuse the students.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "consider",
+    "part_of_speech": "verb",
+    "definition": "to think carefully about something, typically before making a choice",
+    "example_sentence": "Please consider all options before making a final decision.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "courage",
+    "part_of_speech": "noun",
+    "definition": "the ability to do something that frightens one",
+    "example_sentence": "It takes courage to speak up when everyone else is silent.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "curious",
+    "part_of_speech": "adjective",
+    "definition": "having a strong desire to know or learn about something",
+    "example_sentence": "Children are naturally curious about the world around them.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "damage",
+    "part_of_speech": "verb",
+    "definition": "to inflict physical harm on something so as to impair its value or usefulness",
+    "example_sentence": "Dropping your laptop could severely damage the screen.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "decide",
+    "part_of_speech": "verb",
+    "definition": "to come to a resolution in the mind as a result of consideration",
+    "example_sentence": "He could not decide which book to read first.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "delicate",
+    "part_of_speech": "adjective",
+    "definition": "easily broken or damaged; fragile",
+    "example_sentence": "The antique porcelain vase is extremely delicate.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "demand",
+    "part_of_speech": "noun",
+    "definition": "an insistent and peremptory request made as of right",
+    "example_sentence": "There is a high demand for skilled full-stack developers.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "determine",
+    "part_of_speech": "verb",
+    "definition": "to discover the facts about something or calculate it exactly",
+    "example_sentence": "The investigation will determine the cause of the system failure.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "discover",
+    "part_of_speech": "verb",
+    "definition": "to find unexpectedly or in the course of a search",
+    "example_sentence": "Scientists discover new species of insects every year.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "doubt",
+    "part_of_speech": "noun",
+    "definition": "a feeling of uncertainty or lack of conviction",
+    "example_sentence": "She had no doubt that she would eventually succeed.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "eager",
+    "part_of_speech": "adjective",
+    "definition": "strongly wanting to do or have something",
+    "example_sentence": "The puppy was eager to play in the freshly fallen snow.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "efficient",
+    "part_of_speech": "adjective",
+    "definition": "achieving maximum productivity with minimum wasted effort or expense",
+    "example_sentence": "Touch typing is a much more efficient way to write text.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "encourage",
+    "part_of_speech": "verb",
+    "definition": "to give support, confidence, or hope to somebody",
+    "example_sentence": "Her teachers encourage her to pursue computer science.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "essential",
+    "part_of_speech": "adjective",
+    "definition": "completely necessary; extremely important in a particular situation",
+    "example_sentence": "Clean water and fresh air are essential for healthy living.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "examine",
+    "part_of_speech": "verb",
+    "definition": "to inspect something thoroughly in order to determine its nature or condition",
+    "example_sentence": "The doctor will examine your throat to check for infection.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "explore",
+    "part_of_speech": "verb",
+    "definition": "to travel through an unfamiliar area in order to learn about it",
+    "example_sentence": "They spent the weekend exploring the mountain trails.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "familiar",
+    "part_of_speech": "adjective",
+    "definition": "well known from long or close association",
+    "example_sentence": "The voice sounded familiar, but he could not place the name.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "flexible",
+    "part_of_speech": "adjective",
+    "definition": "capable of bending easily without breaking; adaptable to change",
+    "example_sentence": "Our schedule is flexible enough to accommodate unexpected meetings.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "forgive",
+    "part_of_speech": "verb",
+    "definition": "to stop feeling angry or resentful toward someone for an offense",
+    "example_sentence": "It takes maturity to forgive someone who wronged you.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "frequent",
+    "part_of_speech": "adjective",
+    "definition": "occurring or done on many occasions with short intervals",
+    "example_sentence": "He made frequent trips to the library to study vocabulary.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "furious",
+    "part_of_speech": "adjective",
+    "definition": "extremely angry or full of violent passion",
+    "example_sentence": "He was furious when he discovered his project files were deleted.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "gentle",
+    "part_of_speech": "adjective",
+    "definition": "having or showing a mild, kind, or tender temperament or character",
+    "example_sentence": "A gentle breeze cooled the afternoon heat.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "graceful",
+    "part_of_speech": "adjective",
+    "definition": "having or showing grace or elegance in movement or form",
+    "example_sentence": "The dancer's graceful movements captivated the audience.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "grateful",
+    "part_of_speech": "adjective",
+    "definition": "feeling or showing an appreciation of kindness; thankful",
+    "example_sentence": "I am grateful for every opportunity to improve my skills.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "hesitate",
+    "part_of_speech": "verb",
+    "definition": "to pause before saying or doing something through uncertainty",
+    "example_sentence": "Do not hesitate to ask questions if something is unclear.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "honest",
+    "part_of_speech": "adjective",
+    "definition": "free of deceit and untruthfulness; sincere",
+    "example_sentence": "He gave an honest answer even when it was uncomfortable.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "imagine",
+    "part_of_speech": "verb",
+    "definition": "to form a mental image or concept of something not present",
+    "example_sentence": "Can you imagine living on Mars one hundred years from now?",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "improve",
+    "part_of_speech": "verb",
+    "definition": "to make or become better in quality, value, or condition",
+    "example_sentence": "Practicing ten minutes every day will improve your vocabulary.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "inspire",
+    "part_of_speech": "verb",
+    "definition": "to fill someone with the urge or ability to do or feel something creative",
+    "example_sentence": "His perseverance continues to inspire everyone on the team.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "journey",
+    "part_of_speech": "noun",
+    "definition": "an act of traveling from one place to another, or a process of personal change",
+    "example_sentence": "Mastering a second language is a long and rewarding journey.",
+    "level": "beginner",
+    "language": "en"
+  },
+  {
+    "word": "abundant",
+    "part_of_speech": "adjective",
+    "definition": "existing or available in large quantities; plentiful",
+    "example_sentence": "The valley is famous for its abundant wildlife and clean springs.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "advocate",
+    "part_of_speech": "verb",
+    "definition": "to publicly recommend or support a particular cause or policy",
+    "example_sentence": "Doctors advocate daily exercise for heart health.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "allocate",
+    "part_of_speech": "verb",
+    "definition": "to distribute resources or duties for a particular purpose",
+    "example_sentence": "We must allocate enough time for writing tests.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "ambiguous",
+    "part_of_speech": "adjective",
+    "definition": "open to more than one interpretation; having a double meaning",
+    "example_sentence": "The politician's ambiguous statement left voters confused.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "amplify",
+    "part_of_speech": "verb",
+    "definition": "to increase the volume, strength, or effect of something",
+    "example_sentence": "Social media can amplify both positive and negative news.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "anticipate",
+    "part_of_speech": "verb",
+    "definition": "to regard as probable; expect or predict",
+    "example_sentence": "We anticipate that traffic will be heavy during rush hour.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "articulate",
+    "part_of_speech": "adjective",
+    "definition": "having or showing the ability to speak fluently and coherently",
+    "example_sentence": "She is an articulate speaker who explains difficult ideas simply.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "authentic",
+    "part_of_speech": "adjective",
+    "definition": "of undisputed origin; genuine and not copied",
+    "example_sentence": "The restaurant serves authentic Italian pizza baked in a stone oven.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "coherent",
+    "part_of_speech": "adjective",
+    "definition": "logical and consistent; forming a unified whole",
+    "example_sentence": "His essay presented a coherent argument supported by facts.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "collaborate",
+    "part_of_speech": "verb",
+    "definition": "to work jointly on an activity, especially to produce or create something",
+    "example_sentence": "Designers and engineers collaborate closely to build good software.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "concise",
+    "part_of_speech": "adjective",
+    "definition": "giving a lot of information clearly and in a few words; brief",
+    "example_sentence": "Keep your summary concise and avoid unnecessary details.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "conspicuous",
+    "part_of_speech": "adjective",
+    "definition": "standing out so as to be clearly visible; attracting notice",
+    "example_sentence": "His bright yellow raincoat made him conspicuous in the crowd.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "constrain",
+    "part_of_speech": "verb",
+    "definition": "to severely restrict the scope, extent, or activity of something",
+    "example_sentence": "A limited budget will constrain our ability to hire contractors.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "controversy",
+    "part_of_speech": "noun",
+    "definition": "prolonged public disagreement or heated discussion",
+    "example_sentence": "The new zoning law sparked intense controversy among residents.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "crucial",
+    "part_of_speech": "adjective",
+    "definition": "decisive or critical, especially in the success or failure of something",
+    "example_sentence": "Early feedback is crucial when building a new product.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "cultivate",
+    "part_of_speech": "verb",
+    "definition": "to try to acquire or develop a quality, sentiment, or skill",
+    "example_sentence": "He worked hard to cultivate good reading habits in his children.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "diminish",
+    "part_of_speech": "verb",
+    "definition": "to make or become less; reduce in size, extent, or importance",
+    "example_sentence": "His enthusiasm did not diminish despite the initial setbacks.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "discrete",
+    "part_of_speech": "adjective",
+    "definition": "individually separate and distinct",
+    "example_sentence": "The program is broken down into small, discrete modules.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "distinguish",
+    "part_of_speech": "verb",
+    "definition": "to recognize or treat someone or something as different",
+    "example_sentence": "It is important to distinguish between correlation and causation.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "diverse",
+    "part_of_speech": "adjective",
+    "definition": "showing a great deal of variety; very different",
+    "example_sentence": "The university attracts students from diverse cultural backgrounds.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "dynamic",
+    "part_of_speech": "adjective",
+    "definition": "characterized by constant change, activity, or progress",
+    "example_sentence": "The software industry is a dynamic environment that moves quickly.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "elaborate",
+    "part_of_speech": "adjective",
+    "definition": "involving many carefully arranged parts or details; intricate",
+    "example_sentence": "They prepared an elaborate feast with dishes from around the world.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "eloquent",
+    "part_of_speech": "adjective",
+    "definition": "fluent or persuasive in speaking or writing",
+    "example_sentence": "His eloquent defense persuaded the jury to acquit the defendant.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "emphasize",
+    "part_of_speech": "verb",
+    "definition": "to give special importance or prominence to something in speaking or writing",
+    "example_sentence": "Teachers always emphasize the importance of regular revision.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "encounter",
+    "part_of_speech": "verb",
+    "definition": "to unexpectedly experience or be faced with something difficult",
+    "example_sentence": "You may encounter unexpected errors when running new code.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "enhance",
+    "part_of_speech": "verb",
+    "definition": "to intensify, increase, or further improve the quality or value of something",
+    "example_sentence": "Adding spices can enhance the natural flavors of the soup.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "enrich",
+    "part_of_speech": "verb",
+    "definition": "to improve or enhance the quality or value of something",
+    "example_sentence": "Reading literature can greatly enrich your vocabulary and perspective.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "equivalent",
+    "part_of_speech": "adjective",
+    "definition": "equal in value, amount, function, or meaning",
+    "example_sentence": "One mile is roughly equivalent to one point six kilometers.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "evaluate",
+    "part_of_speech": "verb",
+    "definition": "to form an idea of the amount, number, or value of; assess",
+    "example_sentence": "We need to evaluate the performance of our database queries.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "fluctuate",
+    "part_of_speech": "verb",
+    "definition": "to rise and fall irregularly in number or amount",
+    "example_sentence": "Stock prices fluctuate throughout the trading day.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "fundamental",
+    "part_of_speech": "adjective",
+    "definition": "forming a necessary base or core; of central importance",
+    "example_sentence": "Freedom of speech is a fundamental right in any democracy.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "illuminate",
+    "part_of_speech": "verb",
+    "definition": "to light up or make something clear and easier to understand",
+    "example_sentence": "The lecturer used diagrams to illuminate difficult concepts.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "illustrate",
+    "part_of_speech": "verb",
+    "definition": "to explain or make something clear by using examples, charts, or pictures",
+    "example_sentence": "She told a personal story to illustrate her central point.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "inevitable",
+    "part_of_speech": "adjective",
+    "definition": "certain to happen; unavoidable",
+    "example_sentence": "Change is an inevitable part of personal growth.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "inherit",
+    "part_of_speech": "verb",
+    "definition": "to receive money, property, or a title from someone when that person dies",
+    "example_sentence": "She will inherit the family home in the countryside.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "insight",
+    "part_of_speech": "noun",
+    "definition": "the capacity to gain an accurate and deep intuitive understanding of a person or thing",
+    "example_sentence": "The research provides valuable insight into consumer behavior.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "integrate",
+    "part_of_speech": "verb",
+    "definition": "to combine one thing with another so that they become a whole",
+    "example_sentence": "It took two weeks to integrate the payment system into our website.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "intricate",
+    "part_of_speech": "adjective",
+    "definition": "very complicated or detailed in design or structure",
+    "example_sentence": "The watch mechanism is made of hundreds of intricate gears.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "intuitive",
+    "part_of_speech": "adjective",
+    "definition": "using or based on what one feels to be true even without conscious reasoning",
+    "example_sentence": "Good UI design should be intuitive and require little explanation.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "legitimate",
+    "part_of_speech": "adjective",
+    "definition": "conforming to the law or to rules; able to be defended with logic",
+    "example_sentence": "He raised several legitimate concerns about the project timeline.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "lucid",
+    "part_of_speech": "adjective",
+    "definition": "expressed clearly; easy to understand",
+    "example_sentence": "The professor gave a lucid explanation of quantum mechanics.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "mandatory",
+    "part_of_speech": "adjective",
+    "definition": "required by law or rules; compulsory",
+    "example_sentence": "Wearing a seatbelt in a moving car is mandatory.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "meticulous",
+    "part_of_speech": "adjective",
+    "definition": "showing great attention to detail; very careful and precise",
+    "example_sentence": "Her meticulous editing caught typos that others had missed.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "modify",
+    "part_of_speech": "verb",
+    "definition": "to make partial or minor changes to something",
+    "example_sentence": "We had to modify the code to support mobile devices.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "navigate",
+    "part_of_speech": "verb",
+    "definition": "to plan and direct the course of a ship, aircraft, or website path",
+    "example_sentence": "Users find it easy to navigate through the clean dashboard.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "notable",
+    "part_of_speech": "adjective",
+    "definition": "worthy of attention or notice; remarkable",
+    "example_sentence": "There has been a notable improvement in his typing accuracy.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "obsolete",
+    "part_of_speech": "adjective",
+    "definition": "no longer produced or used; out of date",
+    "example_sentence": "Floppy disks have been completely obsolete for decades.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "perceive",
+    "part_of_speech": "verb",
+    "definition": "to become aware or conscious of something through the senses or intellect",
+    "example_sentence": "People perceive colors slightly differently depending on lighting.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "perpetuate",
+    "part_of_speech": "verb",
+    "definition": "to make something continue indefinitely, especially something undesirable",
+    "example_sentence": "Spreading rumors will only perpetuate misunderstandings.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "plausible",
+    "part_of_speech": "adjective",
+    "definition": "seeming reasonable or probable in explanation",
+    "example_sentence": "The detective listened carefully to her plausible explanation.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "ponder",
+    "part_of_speech": "verb",
+    "definition": "to think about something carefully, especially before making a decision",
+    "example_sentence": "Take a moment to ponder the consequences of your choice.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "pragmatic",
+    "part_of_speech": "adjective",
+    "definition": "dealing with things sensibly and realistically in a practical way",
+    "example_sentence": "We took a pragmatic approach and fixed the most urgent bug first.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "prevail",
+    "part_of_speech": "verb",
+    "definition": "to prove more powerful than opposing forces; be victorious",
+    "example_sentence": "Truth and justice will eventually prevail.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "profound",
+    "part_of_speech": "adjective",
+    "definition": "very great or intense; having deep insight or understanding",
+    "example_sentence": "The book had a profound impact on how he viewed the world.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "resilient",
+    "part_of_speech": "adjective",
+    "definition": "able to recover quickly from difficult conditions",
+    "example_sentence": "Children are often remarkably resilient in times of adversity.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "scarce",
+    "part_of_speech": "adjective",
+    "definition": "insufficient for the demand; rare",
+    "example_sentence": "Fresh water is scarce in desert regions of the world.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "subsequent",
+    "part_of_speech": "adjective",
+    "definition": "coming after something in time; following",
+    "example_sentence": "The theory was confirmed by subsequent laboratory experiments.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "synthesize",
+    "part_of_speech": "verb",
+    "definition": "to combine a number of things into a coherent whole",
+    "example_sentence": "She can synthesize complex scientific papers into simple summaries.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "tangible",
+    "part_of_speech": "adjective",
+    "definition": "perceptible by touch; clear and definite; real",
+    "example_sentence": "We need tangible results before committing further funding.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "vibrant",
+    "part_of_speech": "adjective",
+    "definition": "full of energy, life, and enthusiasm; bright and striking",
+    "example_sentence": "The market was vibrant with street musicians and colorful fruit stands.",
+    "level": "intermediate",
+    "language": "en"
+  },
+  {
+    "word": "alleviate",
+    "part_of_speech": "verb",
+    "definition": "to make suffering, deficiency, or a problem less severe",
+    "example_sentence": "A warm cup of tea helped alleviate his headache.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "anomalous",
+    "part_of_speech": "adjective",
+    "definition": "deviating from what is standard, normal, or expected",
+    "example_sentence": "The sensors recorded an anomalous spike in temperature.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "benevolent",
+    "part_of_speech": "adjective",
+    "definition": "well meaning and kindly; serving a charitable rather than profit purpose",
+    "example_sentence": "A benevolent donor funded the construction of the public library.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "cacophony",
+    "part_of_speech": "noun",
+    "definition": "a harsh, discordant mixture of sounds",
+    "example_sentence": "A cacophony of car horns echoed through the busy downtown street.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "capricious",
+    "part_of_speech": "adjective",
+    "definition": "given to sudden and unaccountable changes of mood or behavior",
+    "example_sentence": "The mountain weather was capricious, turning from sun to snow in minutes.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "cogent",
+    "part_of_speech": "adjective",
+    "definition": "clear, logical, and convincing in argument",
+    "example_sentence": "She presented a cogent case for updating our legacy systems.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "complacent",
+    "part_of_speech": "adjective",
+    "definition": "showing uncritical satisfaction with oneself or one's achievements",
+    "example_sentence": "We cannot afford to become complacent despite our recent successes.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "deleterious",
+    "part_of_speech": "adjective",
+    "definition": "causing harm or damage, often in a subtle or unexpected way",
+    "example_sentence": "Lack of sleep can have deleterious effects on memory retention.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "dichotomy",
+    "part_of_speech": "noun",
+    "definition": "a division or contrast between two things that are represented as entirely different",
+    "example_sentence": "The essay explores the dichotomy between theory and practice.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "disparate",
+    "part_of_speech": "adjective",
+    "definition": "essentially different in kind; not allowing comparison",
+    "example_sentence": "The team brought together experts from disparate scientific fields.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "ephemeral",
+    "part_of_speech": "adjective",
+    "definition": "lasting for a very short time; transitory",
+    "example_sentence": "Fame on the internet is often ephemeral and quickly forgotten.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "equivocal",
+    "part_of_speech": "adjective",
+    "definition": "open to more than one interpretation; ambiguous",
+    "example_sentence": "The experimental results were equivocal and required further testing.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "esoteric",
+    "part_of_speech": "adjective",
+    "definition": "intended for or likely to be understood by only a small number of people with specialized knowledge",
+    "example_sentence": "The paper dealt with esoteric aspects of compiler optimization.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "exacerbate",
+    "part_of_speech": "verb",
+    "definition": "to make a problem, bad situation, or negative feeling worse",
+    "example_sentence": "Running on an injured ankle will only exacerbate the injury.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "exemplary",
+    "part_of_speech": "adjective",
+    "definition": "serving as a desirable model; representing the best of its kind",
+    "example_sentence": "Her exemplary leadership guided the company through the crisis.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "fastidious",
+    "part_of_speech": "adjective",
+    "definition": "very attentive to and concerned about accuracy and detail",
+    "example_sentence": "He was fastidious about the formatting of every line of code.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "garrulous",
+    "part_of_speech": "adjective",
+    "definition": "excessively talkative, especially on trivial matters",
+    "example_sentence": "The garrulous passenger kept talking throughout the four-hour flight.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "gregarious",
+    "part_of_speech": "adjective",
+    "definition": "fond of company; sociable and outgoing",
+    "example_sentence": "Her gregarious personality made her popular at every gathering.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "idiosyncrasy",
+    "part_of_speech": "noun",
+    "definition": "a mode of behavior or way of thought peculiar to an individual",
+    "example_sentence": "One of his idiosyncrasies was drinking hot tea with a slice of cucumber.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "impetuous",
+    "part_of_speech": "adjective",
+    "definition": "acting or done quickly and without thought or care",
+    "example_sentence": "His impetuous decision to resign surprised all of his colleagues.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "indolent",
+    "part_of_speech": "adjective",
+    "definition": "wanting to avoid activity or exertion; lazy",
+    "example_sentence": "The hot summer afternoon made even the active dog feel indolent.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "ingenuous",
+    "part_of_speech": "adjective",
+    "definition": "innocent and unsuspecting; candid and sincere",
+    "example_sentence": "Her ingenuous nature led her to trust strangers too readily.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "insidious",
+    "part_of_speech": "adjective",
+    "definition": "proceeding in a gradual, subtle way, but with harmful effects",
+    "example_sentence": "High blood pressure is often an insidious condition with few early symptoms.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "intransigent",
+    "part_of_speech": "adjective",
+    "definition": "unwilling or refusing to change one's views or to agree about something",
+    "example_sentence": "Both sides remained intransigent during the contract negotiations.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "juxtaposition",
+    "part_of_speech": "noun",
+    "definition": "the fact of two things being seen or placed close together with contrasting effect",
+    "example_sentence": "The striking juxtaposition of modern glass skyscrapers beside ancient stone temples.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "laconic",
+    "part_of_speech": "adjective",
+    "definition": "using very few words; concise to the point of seeming rude or mysterious",
+    "example_sentence": "His laconic reply was simply a single nod of the head.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "lucrative",
+    "part_of_speech": "adjective",
+    "definition": "producing a great deal of profit",
+    "example_sentence": "Investing in renewable energy turned out to be a lucrative venture.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "magnanimous",
+    "part_of_speech": "adjective",
+    "definition": "generous or forgiving, especially toward a rival or less powerful person",
+    "example_sentence": "The champion was magnanimous in victory and praised his opponent.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "nefarious",
+    "part_of_speech": "adjective",
+    "definition": "wicked, villainous, or criminal in nature or action",
+    "example_sentence": "The hacker used nefarious software to steal sensitive personal information.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "nonchalant",
+    "part_of_speech": "adjective",
+    "definition": "feeling or appearing casually calm and relaxed; not displaying anxiety",
+    "example_sentence": "She gave a nonchalant shrug when asked about the difficult test.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "ostentatious",
+    "part_of_speech": "adjective",
+    "definition": "characterized by vulgar or pretentious display; designed to impress or attract notice",
+    "example_sentence": "The mansion was decorated in an ostentatious display of wealth.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "paradigm",
+    "part_of_speech": "noun",
+    "definition": "a typical example or pattern of something; a model or worldview",
+    "example_sentence": "The App Router represents a new paradigm for building React applications.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "perfunctory",
+    "part_of_speech": "adjective",
+    "definition": "carried out with a minimum of effort or reflection; superficial",
+    "example_sentence": "He gave a perfunctory nod before quickly walking past us.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "quixotic",
+    "part_of_speech": "adjective",
+    "definition": "exceedingly idealistic; unrealistic and impractical",
+    "example_sentence": "His quixotic plan to clean the entire ocean by himself seemed doomed.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "recalcitrant",
+    "part_of_speech": "adjective",
+    "definition": "having an obstinately uncooperative attitude toward authority or discipline",
+    "example_sentence": "The recalcitrant student refused to participate in class discussions.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "salient",
+    "part_of_speech": "adjective",
+    "definition": "most noticeable or important; prominent",
+    "example_sentence": "The speaker highlighted the salient points of the newly published report.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "tenacious",
+    "part_of_speech": "adjective",
+    "definition": "tending to keep a firm hold of something; clinging or adhering closely; persistent",
+    "example_sentence": "Her tenacious determination helped her overcome severe setbacks.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "ubiquitous",
+    "part_of_speech": "adjective",
+    "definition": "present, appearing, or found everywhere",
+    "example_sentence": "Smartphones have become ubiquitous across every corner of the globe.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "venerable",
+    "part_of_speech": "adjective",
+    "definition": "accorded a great deal of respect, especially because of age, wisdom, or character",
+    "example_sentence": "The venerable professor received a standing ovation from the faculty.",
+    "level": "advanced",
+    "language": "en"
+  },
+  {
+    "word": "zealous",
+    "part_of_speech": "adjective",
+    "definition": "having or showing great energy or enthusiasm in pursuit of a cause or objective",
+    "example_sentence": "He was a zealous advocate for environmental conservation.",
+    "level": "advanced",
+    "language": "en"
+  }
+]

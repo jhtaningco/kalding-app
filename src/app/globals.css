@@ -1,26 +1,195 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Design tokens.
+ * Colours live in CSS variables. Dark mode only swaps the variables, never the
+ * components. Tokens are scoped to [data-theme], not just <html>, so any
+ * subtree (like the /design side-by-side panels) can force a theme.
+ *
+ * Contrast notes (WCAG AA, normal text needs 4.5:1):
+ *   light: foreground/background ~13:1, muted/background ~7:1, on-primary/primary ~5.3:1
+ *   dark:  foreground/background ~14:1, muted/background ~8:1, on-primary/primary ~7.9:1
+ */
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --background: #f6faf7;
+  --card: #ffffff;
+  --border: #d5dfd8;
+  --foreground: #1f2937;
+  --muted: #4b5563;
+
+  --primary: #167a4f;
+  --primary-shadow: #0f5c3a;
+  --on-primary: #ffffff;
+  --progress: #22a06b;
+  --progress-track: #e3ebe6;
+
+  --streak-bg: #ffe9d6;
+  --streak-fg: #9a3412;
+  --points-bg: #fff1c7;
+  --points-fg: #7a4b00;
+
+  --success-bg: #e3f5ea;
+  --success-fg: #0f5c3a;
+  --success-border: #9ad7b5;
+  --danger-bg: #fdecea;
+  --danger-fg: #9b1c1c;
+  --danger-border: #f0b4ae;
+
+  --secondary-shadow: #d5dfd8;
+  --focus: #2563eb;
+
+  --letter-correct: #167a4f;
+  --letter-wrong: #b91c1c;
+  --letter-pending: #6b7280;
+
+  /* Kalding needs no outline on a light background. */
+  --kalding-filter: none;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Deep navy, not pure black. */
+  --background: #0e1629;
+  --card: #16213a;
+  --border: #2a3a5e;
+  --foreground: #e8eef8;
+  --muted: #a7b4ca;
+
+  --primary: #3ccb8b;
+  --primary-shadow: #1f8f5e;
+  --on-primary: #052e1b;
+  --progress: #34c38a;
+  --progress-track: #22304f;
+
+  --streak-bg: #4a2713;
+  --streak-fg: #ffc8a0;
+  --points-bg: #4a3a0a;
+  --points-fg: #ffe08a;
+
+  --success-bg: #12392b;
+  --success-fg: #8de9be;
+  --success-border: #25735a;
+  --danger-bg: #3e1d26;
+  --danger-fg: #ffb6b0;
+  --danger-border: #7c3a45;
+
+  --secondary-shadow: #0a1020;
+  --focus: #8ab8ff;
+
+  --letter-correct: #4ade9f;
+  --letter-wrong: #ff8a8a;
+  --letter-pending: #8393ae;
+
+  /* Thin cream outline so brown horns and hooves stay visible on navy. */
+  --kalding-filter: drop-shadow(1.5px 0 0 rgb(243 235 221 / 0.55))
+    drop-shadow(-1.5px 0 0 rgb(243 235 221 / 0.55))
+    drop-shadow(0 1.5px 0 rgb(243 235 221 / 0.55))
+    drop-shadow(0 -1.5px 0 rgb(243 235 221 / 0.55));
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-card: var(--card);
+  --color-border: var(--border);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-muted: var(--muted);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --color-primary: var(--primary);
+  --color-primary-shadow: var(--primary-shadow);
+  --color-on-primary: var(--on-primary);
+  --color-progress: var(--progress);
+  --color-progress-track: var(--progress-track);
+
+  --color-streak-bg: var(--streak-bg);
+  --color-streak-fg: var(--streak-fg);
+  --color-points-bg: var(--points-bg);
+  --color-points-fg: var(--points-fg);
+
+  --color-success-bg: var(--success-bg);
+  --color-success-fg: var(--success-fg);
+  --color-success-border: var(--success-border);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-fg: var(--danger-fg);
+  --color-danger-border: var(--danger-border);
+
+  --color-focus: var(--focus);
+  --color-letter-correct: var(--letter-correct);
+  --color-letter-wrong: var(--letter-wrong);
+  --color-letter-pending: var(--letter-pending);
+
+  --font-sans: var(--font-nunito);
+  --font-mono: var(--font-jetbrains-mono);
+
+  --animate-pop: pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --animate-shake: shake 0.4s ease-in-out;
+  --animate-blink: blink 1.05s steps(1) infinite;
+
+  @keyframes pop {
+    0% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.06) translateY(-6px);
+    }
+    100% {
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-6px);
+    }
+    40% {
+      transform: translateX(5px);
+    }
+    60% {
+      transform: translateX(-3px);
+    }
+    80% {
+      transform: translateX(2px);
+    }
+  }
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-nunito), system-ui, sans-serif;
+}
+
+/* Applied to every Kalding SVG; the value comes from the theme token. */
+.kalding-svg {
+  filter: var(--kalding-filter);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

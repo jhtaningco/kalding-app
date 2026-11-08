@@ -1,0 +1,36 @@
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
+import type { Database } from "@/types/database";
+
+export async function createClient() {
+  const cookieStore = await cookies();
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder-project.supabase.co";
+
+  const rawKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    "";
+  const supabaseAnonKey =
+    rawKey.endsWith("...") && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+      ? process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+      : rawKey || "placeholder-anon-key";
+
+  return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options),
+          );
+        } catch {
+          // The `setAll` method was called from a Server Component.
+          // This can be ignored if you have proxy/middleware refreshing user sessions.
+        }
+      },
+    },
+  });
+}
