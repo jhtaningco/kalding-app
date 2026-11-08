@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { JetBrains_Mono, Nunito } from "next/font/google";
 import { themeInitScript } from "@/lib/theme";
@@ -15,8 +15,35 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kalding English",
-  description: "Learn English by typing: vocabulary, spelling, and grammar.",
+  title: {
+    default: "Kalding English | Master Vocabulary by Typing",
+    template: "%s | Kalding English",
+  },
+  description:
+    "Learn English through engaging typing drills, spaced repetition vocabulary, sentence transcriptions, and instant AI grading featuring Kalding the goat mascot.",
+  keywords: [
+    "English typing",
+    "vocabulary builder",
+    "spaced repetition",
+    "typing tutor",
+    "Kalding",
+    "learn English",
+  ],
+  authors: [{ name: "Kalding English" }],
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0B132B" },
+    { media: "(prefers-color-scheme: light)", color: "#1CB0F6" },
+  ],
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

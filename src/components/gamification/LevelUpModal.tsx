@@ -5,6 +5,7 @@ import { Kalding } from "@/components/kalding/Kalding";
 import { SpeechBubble } from "@/components/kalding/SpeechBubble";
 import { Button } from "@/components/ui/Button";
 import { StarIcon } from "@/components/ui/icons";
+import { playLevelUpSound } from "@/lib/sounds";
 
 export interface LevelUpModalProps {
   newLevel: number;
@@ -16,6 +17,8 @@ export function LevelUpModal({ newLevel, newTitle, onClose }: LevelUpModalProps)
   const [isOpen, setIsOpen] = useState(true);
 
   useEffect(() => {
+    playLevelUpSound();
+
     // Escape key closes modal
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -49,12 +52,7 @@ export function LevelUpModal({ newLevel, newTitle, onClose }: LevelUpModalProps)
             <StarIcon size={16} /> New Rank Unlocked
           </div>
           <span className="text-foreground text-3xl font-black">Level {newLevel}</span>
-          <span className="text-muted text-sm font-extrabold">{newTitle}</span>
         </div>
-
-        <p className="text-muted text-xs leading-relaxed max-w-xs">
-          Your typing consistency and vocabulary mastery are paying off. Keep feeding Kalding new words!
-        </p>
 
         <Button
           size="lg"
@@ -62,9 +60,9 @@ export function LevelUpModal({ newLevel, newTitle, onClose }: LevelUpModalProps)
             setIsOpen(false);
             onClose();
           }}
-          className="w-full text-lg"
+          className="w-full text-base"
         >
-          Claim Reward & Continue
+          Keep Practicing!
         </Button>
       </div>
     </div>

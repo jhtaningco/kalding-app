@@ -87,7 +87,8 @@ export function SentenceTypingArea({
         autoCorrect="off"
         spellCheck="false"
         rows={1}
-        className="absolute inset-0 size-full opacity-0 pointer-events-none -z-10"
+        inputMode="text"
+        className="absolute inset-0 size-full cursor-text opacity-0"
         aria-label="Sentence typing input"
       />
 
@@ -108,7 +109,7 @@ export function SentenceTypingArea({
             charClass = "text-danger-fg bg-danger-bg/80 rounded-sm underline font-extrabold";
           }
 
-          const displayChar = isWrong ? (typedChar === " " ? "␣" : typedChar) : char;
+          const displayChar = isWrong ? (typedChar === " " ? "â£" : typedChar) : char;
 
           return (
             <span key={index} className="relative inline-block whitespace-pre">
