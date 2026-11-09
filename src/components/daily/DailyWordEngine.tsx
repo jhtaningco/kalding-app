@@ -38,9 +38,10 @@ export function DailyWordEngine({
 }: DailyWordEngineProps) {
   const supabase = createClient();
 
-  const [stage, setStage] = useState<DailyStage>(initialCompleted ? "complete" : 1);
-  const [totalEarned, setTotalEarned] = useState(initialCompleted ? DAILY_WORD_BONUS_XP : 0);
-  const [, setIsCompleted] = useState(initialCompleted);
+  // Always start at Stage 1 so user can repeat the daily word drill anytime
+  const [stage, setStage] = useState<DailyStage>(1);
+  const [hasClaimedBonus, setHasClaimedBonus] = useState(initialCompleted);
+  const [earnedInThisRun, setEarnedInThisRun] = useState(0);
 
   // Stage 1: Word spelling
   const [typedWord, setTypedWord] = useState("");
@@ -71,6 +72,27 @@ export function DailyWordEngine({
     startTimeRef.current = Date.now();
   }, []);
 
+  const handleRestart = () => {
+    setStage(1);
+    setTypedWord("");
+    setStage1Status("idle");
+    setTypedDef("");
+    setStage2Status("idle");
+    setTypedSentence("");
+    setStage3Status("idle");
+    setUserSentence("");
+    setStage4Status("idle");
+    setEarnedInThisRun(0);
+    setValidation({
+      isValid: false,
+      message: `Write an original sentence with at least 4 words using "${word.word}".`,
+      hasTargetWord: false,
+      hasPunctuation: false,
+      wordCount: 0,
+    });
+    startTimeRef.current = Date.now();
+  };
+
   // Handle live validation in Stage 4
   const handleSentenceChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
@@ -85,7 +107,6 @@ export function DailyWordEngine({
     if (isCorrect) {
       playCorrectSound();
       setStage1Status("correct");
-      setTotalEarned((p) => p + 10);
     } else {
       playWrongSound();
       setStage1Status("wrong");
@@ -102,7 +123,6 @@ export function DailyWordEngine({
     if (isExact || isClose) {
       playCorrectSound();
       setStage2Status("correct");
-      setTotalEarned((p) => p + 15);
     } else {
       playWrongSound();
       setStage2Status("wrong");
@@ -119,7 +139,6 @@ export function DailyWordEngine({
     if (isClose) {
       playCorrectSound();
       setStage3Status("correct");
-      setTotalEarned((p) => p + 15);
     } else {
       playWrongSound();
       setStage3Status("wrong");
@@ -132,9 +151,12 @@ export function DailyWordEngine({
 
     playLevelUpSound();
     setStage4Status("correct");
-    const bonus = DAILY_WORD_BONUS_XP;
-    setTotalEarned((p) => p + bonus);
-    setIsCompleted(true);
+
+    // XP Bonus is ONLY awarded on the first completion of the day.
+    // Subsequent repeats award 0 XP to prevent point farming while allowing unlimited practice.
+    const bonusToAward = hasClaimedBonus ? 0 : DAILY_WORD_BONUS_XP;
+    setEarnedInThisRun(bonusToAward);
+    setHasClaimedBonus(true);
     setStage("complete");
 
     // Persist attempt to Supabase
@@ -149,13 +171,13 @@ export function DailyWordEngine({
         typedText: userSentence,
         timeMs,
         accuracy: 100,
-        pointsEarned: bonus,
+        pointsEarned: bonusToAward,
         language: word.language || "en",
       }).catch((err) => {
         console.warn("Failed to persist daily word attempt:", err);
       });
     }
-  }, [validation.isValid, stage4Status, userId, word, userSentence, supabase]);
+  }, [validation.isValid, stage4Status, hasClaimedBonus, userId, word, userSentence, supabase]);
 
   // Keyboard navigation: Enter advances stages when ready
   useEffect(() => {
@@ -189,13 +211,17 @@ export function DailyWordEngine({
 
   if (stage === "complete") {
     mood = "celebrate";
-    speech = `Magnificent job! You mastered today's word and earned +${DAILY_WORD_BONUS_XP} XP!`;
+    speech = earnedInThisRun > 0
+      ? `Magnificent job! You mastered today's word and claimed +${DAILY_WORD_BONUS_XP} XP!`
+      : `Great repetition! Your memory of "${word.word}" is locked in!`;
   } else if (stage === 1) {
     mood = stage1Status === "correct" ? "happy" : "thinking";
     speech =
       stage1Status === "correct"
         ? `Spot on! Press Continue or hit Enter to type the definition.`
-        : `Part 1: Recall & Spelling. Listen and type the target word!`;
+        : hasClaimedBonus
+          ? `Repeat Practice: Listen and type "${word.word}" to refresh your recall.`
+          : `Part 1: Recall & Spelling. Listen and type the target word!`;
   } else if (stage === 2) {
     mood = stage2Status === "correct" ? "happy" : "neutral";
     speech =
@@ -211,14 +237,14 @@ export function DailyWordEngine({
   } else if (stage === 4) {
     mood = validation.isValid ? "happy" : "thinking";
     speech = validation.isValid
-      ? `Your sentence looks great! Click Complete Challenge to claim your +50 XP bonus.`
+      ? `Your sentence looks great! Click Complete Challenge to finalize today's focus.`
       : `Part 4: Use "${word.word}" in an original sentence of your own.`;
   }
 
   return (
     <div className="flex min-h-screen flex-col">
       <TopBar
-        points={initialPoints + totalEarned}
+        points={initialPoints + earnedInThisRun}
         streak={initialStreak}
         progress={{ value: stageNum, max: 4 }}
         exitHref="/"
@@ -228,14 +254,20 @@ export function DailyWordEngine({
         {/* Stage Pills & Date Badge */}
         <div className="flex flex-wrap items-center justify-center gap-2">
           <Chip variant="mode" className="text-xs font-black uppercase tracking-wider">
-            ðŸŒŸ Vocabulary of the Day
+            🌟 Vocabulary of the Day
           </Chip>
           <span className="border-border bg-card text-muted rounded-full border px-3 py-0.5 text-xs font-extrabold">
             {dateKey}
           </span>
-          <span className="border-primary/40 bg-primary/10 text-primary rounded-full border px-2.5 py-0.5 text-xs font-black">
-            +{DAILY_WORD_BONUS_XP} XP Bonus
-          </span>
+          {hasClaimedBonus ? (
+            <span className="border-border bg-card text-muted rounded-full border px-2.5 py-0.5 text-xs font-bold">
+              Practice Repeat (Bonus Already Claimed)
+            </span>
+          ) : (
+            <span className="border-primary/40 bg-primary/10 text-primary rounded-full border px-2.5 py-0.5 text-xs font-black">
+              +{DAILY_WORD_BONUS_XP} XP First Completion
+            </span>
+          )}
         </div>
 
         {/* Mascot Header */}
@@ -436,7 +468,7 @@ export function DailyWordEngine({
                       : "border-border bg-card text-muted"
                   }`}
                 >
-                  {validation.hasTargetWord ? "âœ“" : "â—‹"} Uses &ldquo;{word.word}&rdquo;
+                  {validation.hasTargetWord ? "✓" : "○"} Uses &ldquo;{word.word}&rdquo;
                 </span>
                 <span
                   className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 font-extrabold transition-colors ${
@@ -445,7 +477,7 @@ export function DailyWordEngine({
                       : "border-border bg-card text-muted"
                   }`}
                 >
-                  {validation.wordCount >= 4 ? "âœ“" : "â—‹"} At least 4 words ({validation.wordCount}/4)
+                  {validation.wordCount >= 4 ? "✓" : "○"} At least 4 words ({validation.wordCount}/4)
                 </span>
                 <span
                   className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 font-extrabold transition-colors ${
@@ -454,7 +486,7 @@ export function DailyWordEngine({
                       : "border-border bg-card text-muted"
                   }`}
                 >
-                  {validation.hasPunctuation ? "âœ“" : "â—‹"} Ends with punctuation (. ! ?)
+                  {validation.hasPunctuation ? "✓" : "○"} Ends with punctuation (. ! ?)
                 </span>
               </div>
             </Card>
@@ -466,7 +498,11 @@ export function DailyWordEngine({
               className="w-full text-base"
             >
               <StarIcon size={20} />
-              <span>Complete Daily Challenge (+{DAILY_WORD_BONUS_XP} XP)</span>
+              <span>
+                {hasClaimedBonus
+                  ? "Complete Repeat Practice"
+                  : `Complete Daily Challenge (+${DAILY_WORD_BONUS_XP} XP)`}
+              </span>
             </Button>
           </div>
         )}
@@ -493,8 +529,15 @@ export function DailyWordEngine({
             {/* Bonus Points Badge */}
             <div className="flex items-center gap-6 rounded-2xl border-2 border-border/80 bg-background/60 p-4">
               <div className="flex flex-col items-center">
-                <span className="text-muted text-[11px] font-extrabold uppercase">Bonus Earned</span>
-                <span className="text-primary text-2xl font-black">+{DAILY_WORD_BONUS_XP} XP</span>
+                <span className="text-muted text-[11px] font-extrabold uppercase">XP Awarded</span>
+                {earnedInThisRun > 0 ? (
+                  <span className="text-primary text-2xl font-black">+{DAILY_WORD_BONUS_XP} XP</span>
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <span className="text-muted text-xl font-black">+0 XP</span>
+                    <span className="text-muted text-[10px] font-bold">Bonus already claimed today</span>
+                  </div>
+                )}
               </div>
               <div className="h-8 w-px bg-border" />
               <div className="flex flex-col items-center">
@@ -517,11 +560,16 @@ export function DailyWordEngine({
             )}
 
             <div className="flex flex-wrap justify-center gap-3 pt-2">
-              <ButtonLink href="/" size="lg" className="min-w-[180px]">
+              <Button
+                onClick={handleRestart}
+                variant="secondary"
+                size="lg"
+                className="min-w-[160px]"
+              >
+                Practice Again
+              </Button>
+              <ButtonLink href="/" size="lg" className="min-w-[160px]">
                 Home Dashboard
-              </ButtonLink>
-              <ButtonLink href="/practice" variant="secondary" size="lg" className="min-w-[180px]">
-                Practice Arena
               </ButtonLink>
             </div>
           </Card>

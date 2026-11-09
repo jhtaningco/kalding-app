@@ -97,7 +97,7 @@ export default async function HomePage() {
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
             <span className="border-primary/40 bg-primary/10 text-primary flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-black">
-              <StarIcon size={13} /> Level {levelInfo.level} • {levelInfo.title}
+              <StarIcon size={13} /> Level {levelInfo.level} â€¢ {levelInfo.title}
             </span>
             <span className="border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-black">
               <FlameIcon size={13} /> {streak.currentStreak} Day Streak
@@ -156,11 +156,11 @@ export default async function HomePage() {
           {/* 4-Step Drill Breakdown */}
           <div className="border-border/60 bg-background/50 flex flex-wrap items-center justify-between gap-2 rounded-2xl border p-3 text-xs font-extrabold text-muted">
             <span>1. Recall & Spelling</span>
-            <span>•</span>
+            <span>â€¢</span>
             <span>2. Type Definition</span>
-            <span>•</span>
+            <span>â€¢</span>
             <span>3. Transcribe Sentence</span>
-            <span>•</span>
+            <span>â€¢</span>
             <span>4. Original Sentence</span>
           </div>
 
@@ -177,7 +177,7 @@ export default async function HomePage() {
               {isDailyCompleted ? (
                 <>
                   <CheckIcon size={18} />
-                  <span>Review Daily Word</span>
+                  <span>Practice Daily Word Again</span>
                 </>
               ) : (
                 <>
