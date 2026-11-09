@@ -66,7 +66,7 @@ const VOCAB_MODES: ModeCardInfo[] = [
   {
     key: "def_to_word",
     href: "/practice/def_to_word",
-    title: "Definition â†’ Word",
+    title: "Definition → Word",
     tag: "Vocabulary Recall",
     description:
       "Read clear definitions, deduce the word, and type with instant green/red letter boxes.",
@@ -102,7 +102,7 @@ const VOCAB_MODES: ModeCardInfo[] = [
   {
     key: "word_to_def",
     href: "/practice/word_to_def",
-    title: "Word â†’ Definition",
+    title: "Word → Definition",
     tag: "AI Graded",
     description:
       "Explain vocabulary in your own words and receive instant AI teacher feedback and concept matching.",

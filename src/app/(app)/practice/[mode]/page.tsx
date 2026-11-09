@@ -19,12 +19,12 @@ const MODE_CONFIGS: Record<
 > = {
   def_to_word: {
     modeKey: "def_to_word",
-    name: "Definition â†’ Word",
+    name: "Definition → Word",
     description: "Read the definition and type the vocabulary word.",
   },
   "def-to-word": {
     modeKey: "def_to_word",
-    name: "Definition â†’ Word",
+    name: "Definition → Word",
     description: "Read the definition and type the vocabulary word.",
   },
   fill_blank: {
@@ -54,12 +54,12 @@ const MODE_CONFIGS: Record<
   },
   word_to_def: {
     modeKey: "word_to_def",
-    name: "Word â†’ Definition (AI Graded)",
+    name: "Word → Definition (AI Graded)",
     description: "Explain the word in your own words and receive AI feedback.",
   },
   "word-to-def": {
     modeKey: "word_to_def",
-    name: "Word â†’ Definition (AI Graded)",
+    name: "Word → Definition (AI Graded)",
     description: "Explain the word in your own words and receive AI feedback.",
   },
   type_def: {

@@ -141,6 +141,14 @@ export function GearIcon(props: IconProps) {
   );
 }
 
+export function ZapIcon(props: IconProps) {
+  return (
+    <Svg {...props} fill="currentColor" strokeWidth={1.5}>
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </Svg>
+  );
+}
+
 export function ArrowRightIcon(props: IconProps) {
   return (
     <Svg {...props}>

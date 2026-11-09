@@ -17,6 +17,7 @@ import { PromptCard, type PracticeMode } from "@/components/practice/PromptCard"
 import { SessionSummary, type SessionResult } from "@/components/practice/SessionSummary";
 import { TypingArea } from "@/components/practice/TypingArea";
 import { SentenceTypingArea } from "@/components/practice/SentenceTypingArea";
+import { CheckIcon, ZapIcon } from "@/components/ui/icons";
 
 export type PracticeEngineProps = {
   words: Tables<"words">[];
@@ -320,8 +321,8 @@ function WordExercise({
             {modeName}
           </Chip>
           {liveWpm !== undefined && liveWpm > 0 && (
-            <span className="border-primary/40 bg-primary/10 text-primary animate-pulse rounded-full border px-3 py-0.5 text-xs font-black">
-              âš¡ {liveWpm} WPM
+            <span className="border-primary/40 bg-primary/10 text-primary flex items-center gap-1 animate-pulse rounded-full border px-3 py-0.5 text-xs font-black">
+              <ZapIcon size={13} /> {liveWpm} WPM
             </span>
           )}
         </div>
@@ -374,9 +375,9 @@ function WordExercise({
                     {gradeFeedback.keyConceptsMatched.map((c) => (
                       <span
                         key={c}
-                        className="border-success-border/60 bg-success-bg rounded-md border px-2 py-0.5 text-[11px] font-extrabold"
+                        className="border-success-border/60 bg-success-bg flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-extrabold"
                       >
-                        âœ“ {c}
+                        <CheckIcon size={11} /> {c}
                       </span>
                     ))}
                   </div>

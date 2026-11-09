@@ -109,7 +109,7 @@ export function SentenceTypingArea({
             charClass = "text-danger-fg bg-danger-bg/80 rounded-sm underline font-extrabold";
           }
 
-          const displayChar = isWrong ? (typedChar === " " ? "â£" : typedChar) : char;
+          const displayChar = isWrong ? (typedChar === " " ? "\u2423" : typedChar) : char;
 
           return (
             <span key={index} className="relative inline-block whitespace-pre">
