@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { calculateStreak } from "@/core/streak";
 import { calculateLevel } from "@/core/levels";
 import { calculateDailyGoalProgress } from "@/core/dailyGoal";
+import { getDailyWordDateKey, getWordOfTheDay, DAILY_WORD_BONUS_XP } from "@/core/dailyWord";
 import { Kalding } from "@/components/kalding/Kalding";
 import { SpeechBubble } from "@/components/kalding/SpeechBubble";
 import { Button, ButtonLink } from "@/components/ui/Button";
@@ -61,6 +62,26 @@ export default async function HomePage() {
     }
   }
 
+  // 4. Fetch words for Vocabulary of the Day
+  const { data: dbWords } = await supabase.from("words").select("*");
+  const words = dbWords ?? [];
+  const dateKey = getDailyWordDateKey(new Date());
+  const dailyWord = getWordOfTheDay(words, dateKey);
+
+  let isDailyCompleted = false;
+  if (user) {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const { data: todayAttempts } = await supabase
+      .from("attempts")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("mode", "daily_word")
+      .gte("created_at", todayStart.toISOString())
+      .limit(1);
+    isDailyCompleted = (todayAttempts?.length ?? 0) > 0;
+  }
+
   const displayName = profile?.display_name || user?.email?.split("@")[0] || "Learner";
   const streak = calculateStreak(activeDates);
   const levelInfo = calculateLevel(totalXp);
@@ -90,6 +111,84 @@ export default async function HomePage() {
           </SpeechBubble>
         </div>
       </div>
+
+      {/* Featured Vocabulary of the Day Hero Card */}
+      {dailyWord && (
+        <div className="border-primary/50 bg-gradient-to-br from-card via-card to-primary/5 flex w-full flex-col gap-4 rounded-3xl border-2 p-6 shadow-md sm:p-8">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-3">
+            <div className="flex items-center gap-2">
+              <span className="border-primary/60 bg-primary text-on-primary flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black uppercase tracking-wider">
+                <StarIcon size={14} /> Word of the Day
+              </span>
+              <span className="text-muted text-xs font-extrabold">{dateKey}</span>
+            </div>
+
+            {isDailyCompleted ? (
+              <span className="border-success-border bg-success-bg text-success-fg flex items-center gap-1.5 rounded-full border px-3 py-0.5 text-xs font-black">
+                <CheckIcon size={14} /> Completed Today (+{DAILY_WORD_BONUS_XP} XP)
+              </span>
+            ) : (
+              <span className="border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center gap-1 rounded-full border px-3 py-0.5 text-xs font-black">
+                <FlameIcon size={13} /> +{DAILY_WORD_BONUS_XP} XP Daily Reward
+              </span>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-2 text-left">
+            <div className="flex flex-wrap items-baseline gap-3">
+              <h3 className="text-primary text-3xl font-black sm:text-4xl">
+                {dailyWord.word}
+              </h3>
+              <span className="text-muted text-sm font-bold italic">
+                ({dailyWord.part_of_speech})
+              </span>
+            </div>
+            <p className="text-foreground text-base font-bold sm:text-lg">
+              {dailyWord.definition}
+            </p>
+            {dailyWord.example_sentence && (
+              <p className="text-muted text-xs font-medium italic">
+                &ldquo;{dailyWord.example_sentence}&rdquo;
+              </p>
+            )}
+          </div>
+
+          {/* 4-Step Drill Breakdown */}
+          <div className="border-border/60 bg-background/50 flex flex-wrap items-center justify-between gap-2 rounded-2xl border p-3 text-xs font-extrabold text-muted">
+            <span>1. Recall & Spelling</span>
+            <span>•</span>
+            <span>2. Type Definition</span>
+            <span>•</span>
+            <span>3. Transcribe Sentence</span>
+            <span>•</span>
+            <span>4. Original Sentence</span>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <p className="text-muted text-xs font-medium">
+              Deep focus challenge: Master today&apos;s single word across spelling, full definition, and context sentence writing.
+            </p>
+            <ButtonLink
+              href="/daily"
+              size="lg"
+              variant={isDailyCompleted ? "secondary" : "primary"}
+              className="w-full sm:w-auto"
+            >
+              {isDailyCompleted ? (
+                <>
+                  <CheckIcon size={18} />
+                  <span>Review Daily Word</span>
+                </>
+              ) : (
+                <>
+                  <StarIcon size={18} />
+                  <span>Start Daily Challenge (+{DAILY_WORD_BONUS_XP} XP)</span>
+                </>
+              )}
+            </ButtonLink>
+          </div>
+        </div>
+      )}
 
       {/* Main Practice Call to Action Card */}
       <div className="border-primary/40 bg-card flex w-full flex-col items-center gap-3 rounded-3xl border-2 p-6 text-center shadow-[0_4px_0_var(--secondary-shadow)] sm:p-8">

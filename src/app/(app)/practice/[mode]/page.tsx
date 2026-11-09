@@ -3,6 +3,7 @@ import path from "node:path";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { selectPracticeWords } from "@/core/wordSelection";
 import { PracticeEngine } from "./practice-engine";
 import { WordRushEngine } from "@/components/practice/WordRushEngine";
 import type { PracticeMode } from "@/components/practice/PromptCard";
@@ -18,12 +19,12 @@ const MODE_CONFIGS: Record<
 > = {
   def_to_word: {
     modeKey: "def_to_word",
-    name: "Definition → Word",
+    name: "Definition â†’ Word",
     description: "Read the definition and type the vocabulary word.",
   },
   "def-to-word": {
     modeKey: "def_to_word",
-    name: "Definition → Word",
+    name: "Definition â†’ Word",
     description: "Read the definition and type the vocabulary word.",
   },
   fill_blank: {
@@ -53,12 +54,12 @@ const MODE_CONFIGS: Record<
   },
   word_to_def: {
     modeKey: "word_to_def",
-    name: "Word → Definition (AI Graded)",
+    name: "Word â†’ Definition (AI Graded)",
     description: "Explain the word in your own words and receive AI feedback.",
   },
   "word-to-def": {
     modeKey: "word_to_def",
-    name: "Word → Definition (AI Graded)",
+    name: "Word â†’ Definition (AI Graded)",
     description: "Explain the word in your own words and receive AI feedback.",
   },
   type_def: {
@@ -124,9 +125,8 @@ export default async function PracticePage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 1. Fetch starter or user words (25 words for rush, 10 for others)
-  const limitCount = config.modeKey === "word_rush" ? 25 : 20;
-  const { data: dbWords } = await supabase.from("words").select("*").limit(limitCount);
+  // 1. Fetch entire word bank (150 starter words)
+  const { data: dbWords } = await supabase.from("words").select("*");
 
   let words: Tables<"words">[] = dbWords ?? [];
 
@@ -137,7 +137,7 @@ export default async function PracticePage({
       if (fs.existsSync(seedPath)) {
         const raw = fs.readFileSync(seedPath, "utf-8");
         const seedItems = JSON.parse(raw);
-        words = seedItems.slice(0, limitCount).map(
+        words = seedItems.map(
           (
             item: {
               word: string;
@@ -160,33 +160,43 @@ export default async function PracticePage({
     }
   }
 
-  // 2. Fetch user's current total points from previous attempts
+  // 2. Fetch user's SRS progress & points
   let initialPoints = 0;
+  let userProgress: { word_id: string; times_seen: number; next_review_at?: string | null }[] = [];
+
   if (user) {
-    const { data: userAttempts } = await supabase
-      .from("attempts")
-      .select("points_earned")
-      .eq("user_id", user.id);
+    const [{ data: userAttempts }, { data: progressRows }] = await Promise.all([
+      supabase.from("attempts").select("points_earned").eq("user_id", user.id),
+      supabase.from("user_words").select("word_id, times_seen, next_review_at").eq("user_id", user.id),
+    ]);
 
     if (userAttempts) {
       initialPoints = userAttempts.reduce((acc, a) => acc + (a.points_earned || 0), 0);
     }
+    if (progressRows) {
+      userProgress = progressRows;
+    }
   }
+
+  // 3. Intelligently select words: prioritizes unseen words and due SRS words
+  const sessionCount = config.modeKey === "word_rush" ? 25 : 10;
+  const sessionWords = selectPracticeWords({
+    words,
+    userProgress,
+    count: sessionCount,
+  });
 
   // If Word Rush continuous stream mode
   if (config.modeKey === "word_rush") {
     return (
       <WordRushEngine
-        words={words}
+        words={sessionWords}
         initialPoints={initialPoints}
         initialStreak={1}
         userId={user?.id}
       />
     );
   }
-
-  // Standard session modes (10 words)
-  const sessionWords = words.slice(0, 10);
 
   return (
     <PracticeEngine

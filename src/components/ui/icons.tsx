@@ -141,6 +141,15 @@ export function GearIcon(props: IconProps) {
   );
 }
 
+export function ArrowRightIcon(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </Svg>
+  );
+}
+
 export function GoogleIcon(props: IconProps) {
   return (
     <Svg {...props} strokeWidth={0} fill="currentColor">

@@ -66,7 +66,7 @@ const VOCAB_MODES: ModeCardInfo[] = [
   {
     key: "def_to_word",
     href: "/practice/def_to_word",
-    title: "Definition → Word",
+    title: "Definition â†’ Word",
     tag: "Vocabulary Recall",
     description:
       "Read clear definitions, deduce the word, and type with instant green/red letter boxes.",
@@ -102,7 +102,7 @@ const VOCAB_MODES: ModeCardInfo[] = [
   {
     key: "word_to_def",
     href: "/practice/word_to_def",
-    title: "Word → Definition",
+    title: "Word â†’ Definition",
     tag: "AI Graded",
     description:
       "Explain vocabulary in your own words and receive instant AI teacher feedback and concept matching.",
@@ -124,6 +124,35 @@ export default function PracticeHubPage() {
             Choose your typing workout! Type full definitions, transcribe complete sentences, or sprint through vocabulary streams.
           </SpeechBubble>
         </div>
+      </div>
+
+      {/* Vocabulary of the Day Banner */}
+      <div className="border-primary/50 bg-primary/10 flex w-full flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-3xl border-2 p-5 text-left">
+        <div className="flex items-center gap-3">
+          <div className="border-primary/60 bg-primary text-on-primary flex size-12 shrink-0 items-center justify-center rounded-2xl shadow-sm">
+            <StarIcon size={24} />
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2">
+              <span className="text-primary text-xs font-black uppercase tracking-wider">
+                Daily Focus
+              </span>
+              <span className="border-border bg-card text-muted rounded-full border px-2 py-0.2 text-[10px] font-bold">
+                +50 XP Bonus
+              </span>
+            </div>
+            <h3 className="text-foreground text-lg font-black">
+              Vocabulary of the Day
+            </h3>
+            <p className="text-muted text-xs">
+              Focus on one featured word today with spelling, full definition typing, and sentence creation.
+            </p>
+          </div>
+        </div>
+
+        <ButtonLink href="/daily" size="md" className="shrink-0">
+          Start Daily Word
+        </ButtonLink>
       </div>
 
       {/* Section 1: Deep Typing & Sentence Flow */}
