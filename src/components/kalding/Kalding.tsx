@@ -405,51 +405,34 @@ function HoofLeg({
   );
 }
 
-/** Full-body variant: standing on four legs, one front hoof raised, front-facing head. */
-function BodyArt() {
+/** Full-body variant: cute, chubby chibi goat standing with hooves. */
+function BodyArt({ mood = "happy" }: { mood?: KaldingMood }) {
   return (
     <g>
-      <ellipse cx={120} cy={282} rx={84} ry={6} fill="currentColor" opacity={0.12} />
+      {/* Soft ground shadow */}
+      <ellipse cx={100} cy={206} rx={56} ry={7} fill="currentColor" opacity={0.12} />
 
-      {/* Tail */}
+      {/* Little curly goat tail */}
       <path
-        d="M192 178 C206 164 214 170 208 184 C203 192 196 190 190 188 Z"
+        d="M152 162 C164 150 172 156 166 168 C162 174 156 172 150 170 Z"
         fill={C.creamDark}
       />
 
-      {/* Back legs (darker, behind) */}
-      <HoofLeg x={58} top={214} bottom={266} color={C.creamDark} />
-      <HoofLeg x={182} top={214} bottom={266} color={C.creamDark} />
+      {/* Back legs (darker, behind body) */}
+      <HoofLeg x={66} top={168} bottom={204} color={C.creamDark} />
+      <HoofLeg x={134} top={168} bottom={204} color={C.creamDark} />
 
-      {/* Neck and body */}
-      <path d="M96 92 L144 92 L152 160 L88 160 Z" fill={C.cream} />
-      <ellipse cx={120} cy={186} rx={78} ry={50} fill={C.cream} />
-      <ellipse cx={120} cy={206} rx={52} ry={26} fill={C.creamDark} opacity={0.55} />
+      {/* Chubby chibi body right under head */}
+      <ellipse cx={100} cy={162} rx={54} ry={36} fill={C.cream} />
+      <ellipse cx={100} cy={168} rx={36} ry={22} fill={C.creamDark} opacity={0.55} />
 
-      {/* Front legs: left planted, right raised and bent */}
-      <HoofLeg x={104} top={216} bottom={268} color={C.cream} />
-      <g>
-        <path
-          d="M138 216 L150 242 L172 226"
-          fill="none"
-          stroke={C.cream}
-          strokeWidth={19}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <ellipse
-          cx={176}
-          cy={223}
-          rx={11}
-          ry={8}
-          fill={C.dark}
-          transform="rotate(-40 176 223)"
-        />
-      </g>
+      {/* Front legs: planted neatly in front */}
+      <HoofLeg x={84} top={172} bottom={204} color={C.cream} />
+      <HoofLeg x={116} top={172} bottom={204} color={C.cream} />
 
-      {/* Head */}
-      <g transform="translate(60 -2) scale(0.6)">
-        <Head mood="happy" />
+      {/* Head: proportional and cute, resting comfortably on the body */}
+      <g transform="translate(10 -6) scale(0.9)">
+        <Head mood={mood === "body" ? "happy" : mood} />
       </g>
     </g>
   );
@@ -457,6 +440,8 @@ function BodyArt() {
 
 export type KaldingProps = {
   mood?: KaldingMood;
+  /** Custom image source override (e.g. "/kalding/my-mascot.png") */
+  src?: string;
   /** Rendered width in px. Height follows the artwork's aspect ratio. */
   size?: number;
   className?: string;
@@ -469,10 +454,24 @@ export function Kalding({
   size = 160,
   className,
   title,
+  src,
 }: KaldingProps) {
+  if (src) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt={title || "Kalding goat mascot"}
+        width={size}
+        height={size}
+        className={cn("kalding-img shrink-0 object-contain", className)}
+      />
+    );
+  }
+
   const isBody = mood === "body";
-  const viewBox = isBody ? "0 0 240 292" : "0 0 200 200";
-  const height = isBody ? Math.round((size * 292) / 240) : size;
+  const viewBox = isBody ? "0 0 200 216" : "0 0 200 200";
+  const height = isBody ? Math.round((size * 216) / 200) : size;
 
   const a11y: Record<string, string | boolean> = title
     ? { role: "img", "aria-label": title }
@@ -488,7 +487,7 @@ export function Kalding({
       className={cn("kalding-svg text-foreground shrink-0", className)}
       {...a11y}
     >
-      {isBody ? <BodyArt /> : <Head mood={mood} />}
+      {isBody ? <BodyArt mood={mood} /> : <Head mood={mood} />}
     </svg>
   );
 }

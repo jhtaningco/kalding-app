@@ -2,12 +2,15 @@ import { createClient } from "@/lib/supabase/server";
 import { calculateStreak } from "@/core/streak";
 import { calculateLevel } from "@/core/levels";
 import { calculateDailyGoalProgress } from "@/core/dailyGoal";
-import { getDailyWordDateKey, getWordOfTheDay, DAILY_WORD_BONUS_XP } from "@/core/dailyWord";
-import { Kalding } from "@/components/kalding/Kalding";
+import {
+  getDailyWordDateKey,
+  getWordOfTheDay,
+  DAILY_WORD_BONUS_XP,
+} from "@/core/dailyWord";
+import { Kalding, type KaldingMood } from "@/components/kalding/Kalding";
 import { SpeechBubble } from "@/components/kalding/SpeechBubble";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Chip } from "@/components/ui/Chip";
 import { CheckIcon, FlameIcon, StarIcon, BookOpenIcon } from "@/components/ui/icons";
 import { StreakCard } from "@/components/gamification/StreakCard";
 import { DailyGoalCard } from "@/components/gamification/DailyGoalCard";
@@ -86,38 +89,41 @@ export default async function HomePage() {
   const streak = calculateStreak(activeDates);
   const levelInfo = calculateLevel(totalXp);
   const dailyGoalProgress = calculateDailyGoalProgress(todayPoints, profile?.daily_goal);
+  const heroMood: KaldingMood = dailyGoalProgress.isGoalMet
+    ? "celebrate"
+    : streak.currentStreak > 0
+      ? "happy"
+      : "neutral";
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center gap-6 px-4 py-6 sm:py-10">
-      <Chip variant="mode">Phase 7: Gamification & Home Dashboard</Chip>
-
       {/* Hero Mascot & Speech Greeting */}
       <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
-        <Kalding mood="body" size={170} title="Kalding the goat mascot" />
+        <Kalding mood={heroMood} size={110} title="Kalding the goat mascot" />
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
             <span className="border-primary/40 bg-primary/10 text-primary flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-black">
               <StarIcon size={13} /> Level {levelInfo.level} &bull; {levelInfo.title}
             </span>
-            <span className="border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-black">
+            <span className="flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-2.5 py-0.5 text-xs font-black text-amber-600 dark:text-amber-400">
               <FlameIcon size={13} /> {streak.currentStreak} Day Streak
             </span>
           </div>
 
           <SpeechBubble tail="left" className="text-base sm:text-lg">
             Mabuhay, <strong className="text-primary">{displayName}</strong>! You are a{" "}
-            <strong>{levelInfo.title}</strong> with{" "}
-            <strong>{totalXp} XP</strong>. {dailyGoalProgress.cheerMessage}
+            <strong>{levelInfo.title}</strong> with <strong>{totalXp} XP</strong>.{" "}
+            {dailyGoalProgress.cheerMessage}
           </SpeechBubble>
         </div>
       </div>
 
       {/* Featured Vocabulary of the Day Hero Card */}
       {dailyWord && (
-        <div className="border-primary/50 bg-gradient-to-br from-card via-card to-primary/5 flex w-full flex-col gap-4 rounded-3xl border-2 p-6 shadow-md sm:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-3">
+        <div className="border-primary/50 from-card via-card to-primary/5 flex w-full flex-col gap-4 rounded-3xl border-2 bg-gradient-to-br p-6 shadow-md sm:p-8">
+          <div className="border-border/60 flex flex-wrap items-center justify-between gap-2 border-b pb-3">
             <div className="flex items-center gap-2">
-              <span className="border-primary/60 bg-primary text-on-primary flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black uppercase tracking-wider">
+              <span className="border-primary/60 bg-primary text-on-primary flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-black tracking-wider uppercase">
                 <StarIcon size={14} /> Word of the Day
               </span>
               <span className="text-muted text-xs font-extrabold">{dateKey}</span>
@@ -128,7 +134,7 @@ export default async function HomePage() {
                 <CheckIcon size={14} /> Completed Today (+{DAILY_WORD_BONUS_XP} XP)
               </span>
             ) : (
-              <span className="border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center gap-1 rounded-full border px-3 py-0.5 text-xs font-black">
+              <span className="flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-0.5 text-xs font-black text-amber-600 dark:text-amber-400">
                 <FlameIcon size={13} /> +{DAILY_WORD_BONUS_XP} XP Daily Reward
               </span>
             )}
@@ -154,19 +160,26 @@ export default async function HomePage() {
           </div>
 
           {/* 4-Step Drill Breakdown */}
-          <div className="border-border/60 bg-background/50 flex flex-wrap items-center justify-between gap-2 rounded-2xl border p-3 text-xs font-extrabold text-muted">
+          <div className="border-border/60 bg-background/50 text-muted flex flex-wrap items-center justify-between gap-2 rounded-2xl border p-3 text-xs font-extrabold">
             <span>1. Recall & Spelling</span>
-            <span aria-hidden="true" className="text-muted/60">&bull;</span>
+            <span aria-hidden="true" className="text-muted/60">
+              &bull;
+            </span>
             <span>2. Type Definition</span>
-            <span aria-hidden="true" className="text-muted/60">&bull;</span>
+            <span aria-hidden="true" className="text-muted/60">
+              &bull;
+            </span>
             <span>3. Transcribe Sentence</span>
-            <span aria-hidden="true" className="text-muted/60">&bull;</span>
+            <span aria-hidden="true" className="text-muted/60">
+              &bull;
+            </span>
             <span>4. Original Sentence</span>
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
             <p className="text-muted text-xs font-medium">
-              Deep focus challenge: Master today&apos;s single word across spelling, full definition, and context sentence writing.
+              Deep focus challenge: Master today&apos;s single word across spelling, full
+              definition, and context sentence writing.
             </p>
             <ButtonLink
               href="/daily"
@@ -200,8 +213,8 @@ export default async function HomePage() {
             Choose Your Learning Path
           </h2>
           <p className="text-muted max-w-md text-sm">
-            Practice vocabulary through 5 specialized typing modes or review words scheduled
-            in your spaced repetition queue.
+            Practice vocabulary through 5 specialized typing modes or review words
+            scheduled in your spaced repetition queue.
           </p>
         </div>
 
