@@ -234,7 +234,7 @@ export default async function HomePage() {
       </div>
 
       {/* Gamification Stats Widgets Grid */}
-      <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-3">
         <DailyGoalCard progress={dailyGoalProgress} />
         <StreakCard streak={streak} />
         <LevelCard levelInfo={levelInfo} />
