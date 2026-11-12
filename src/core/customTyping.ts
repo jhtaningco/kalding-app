@@ -14,28 +14,28 @@ export const PRESET_CUSTOM_TEXTS: CustomTextPreset[] = [
     title: "Stay Hungry, Stay Foolish",
     source: "Steve Jobs (Stanford Commencement)",
     category: "speech",
-    text: "Your time is limited, so don't waste it living someone else's life. Don't be trapped by dogma, which is living with the results of other people's thinking. Don't let the noise of others' opinions drown out your own inner voice. And most important, have the courage to follow your heart and intuition.",
+    text: "Your time is limited, so don't waste it living someone else's life. Don't be trapped by dogma, which is living with the results of other people's thinking.\n\nDon't let the noise of others' opinions drown out your own inner voice. And most important, have the courage to follow your heart and intuition.",
   },
   {
     id: "pale-blue-dot",
     title: "The Pale Blue Dot",
     source: "Carl Sagan (Cosmos)",
     category: "philosophy",
-    text: "Look again at that dot. That's here. That's home. That's us. On it everyone you love, everyone you know, everyone you ever heard of, every human being who ever was, lived out their lives. The aggregate of our joy and suffering, thousands of confident religions, ideologies, and economic doctrines.",
+    text: "Look again at that dot. That's here. That's home. That's us. On it everyone you love, everyone you know, everyone you ever heard of, every human being who ever was, lived out their lives.\n\nThe aggregate of our joy and suffering, thousands of confident religions, ideologies, and economic doctrines, every hunter and forager lived there on a mote of dust suspended in a sunbeam.",
   },
   {
     id: "pride-prejudice",
     title: "Pride and Prejudice",
     source: "Jane Austen",
     category: "literature",
-    text: "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife. However little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families.",
+    text: "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.\n\nHowever little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families.",
   },
   {
     id: "kalding-lore",
     title: "The Legend of Kalding",
     source: "Kalding Chronicles",
     category: "lore",
-    text: "High up in the foggy mountains of the Cordilleras, there lived a legendary goat named Kalding. Unlike other goats who merely grazed on grass, Kalding possessed an insatiable hunger for English vocabulary and mechanical keyboards. Every morning at sunrise, Kalding clattered keys across the cool mountain breeze.",
+    text: "High up in the foggy mountains of the Cordilleras, there lived a legendary goat named Kalding. Unlike other goats who merely grazed on grass, Kalding possessed an insatiable hunger for English vocabulary and mechanical keyboards.\n\nEvery morning at sunrise, Kalding clattered keys across the cool mountain breeze, transcribing ancient literature while the misty peaks echoed with swift, flawless keystrokes.",
   },
 ];
 
@@ -43,7 +43,7 @@ export interface NormalizationOptions {
   normalizeQuotes?: boolean;
   normalizeDashes?: boolean;
   normalizeWhitespace?: boolean;
-  normalizeNewlines?: boolean;
+  preserveParagraphs?: boolean;
 }
 
 /**
@@ -51,6 +51,8 @@ export interface NormalizationOptions {
  * - Replaces typographic curly quotes (“ ” ‘ ’) with standard straight quotes (" ')
  * - Replaces em-dashes and en-dashes (— –) with standard dashes (-- -)
  * - Converts non-breaking spaces (\u00A0) and consecutive whitespace to a single space
+ * - When preserveParagraphs is true (default): preserves clean paragraph breaks (\n)
+ *   while removing redundant blank lines and soft linebreaks.
  * - Trims leading and trailing spaces
  */
 export function normalizeCustomText(
@@ -61,7 +63,7 @@ export function normalizeCustomText(
     normalizeQuotes = true,
     normalizeDashes = true,
     normalizeWhitespace = true,
-    normalizeNewlines = true,
+    preserveParagraphs = true,
   } = options;
 
   let text = rawText || "";
@@ -82,15 +84,42 @@ export function normalizeCustomText(
   // Ellipsis
   text = text.replace(/\u2026/g, "...");
 
-  if (normalizeNewlines) {
+  // Standardize CRLF and CR to LF
+  text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+  if (preserveParagraphs) {
+    const hasDoubleNewlines = /\n\s*\n/.test(text);
+
+    let paragraphs: string[];
+    if (hasDoubleNewlines) {
+      // Split by double newlines; inside each paragraph, collapse soft linebreaks
+      paragraphs = text.split(/\n\s*\n+/).map((p) => {
+        let cleanP = p.replace(/\n+/g, " ");
+        if (normalizeWhitespace) {
+          cleanP = cleanP.replace(/[ \t]+/g, " ");
+        }
+        return cleanP.trim();
+      });
+    } else {
+      // If only single newlines exist, treat each non-empty line as a paragraph/line
+      paragraphs = text.split(/\n+/).map((p) => {
+        let cleanP = p;
+        if (normalizeWhitespace) {
+          cleanP = cleanP.replace(/[ \t]+/g, " ");
+        }
+        return cleanP.trim();
+      });
+    }
+
+    return paragraphs.filter(Boolean).join("\n");
+  } else {
+    // Flatten all newlines into single spaces
     text = text.replace(/[\r\n]+/g, " ");
+    if (normalizeWhitespace) {
+      text = text.replace(/[ \t]+/g, " ");
+    }
+    return text.trim();
   }
-
-  if (normalizeWhitespace) {
-    text = text.replace(/[ \t]+/g, " ");
-  }
-
-  return text.trim();
 }
 
 export interface CustomTextStats {

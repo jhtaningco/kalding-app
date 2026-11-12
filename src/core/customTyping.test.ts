@@ -19,10 +19,22 @@ describe("normalizeCustomText", () => {
     expect(normalized).toBe(`Life--or something like it - isn't easy.`);
   });
 
-  it("normalizes newlines and consecutive whitespace to single spaces", () => {
-    const raw = "Paragraph one.\n\nParagraph   two.\r\n   Paragraph three.";
+  it("preserves paragraph breaks while cleaning multiple newlines and spaces", () => {
+    const raw = "Paragraph one.\n\nParagraph   two.\r\n\r\n   Paragraph three.";
     const normalized = normalizeCustomText(raw);
+    expect(normalized).toBe("Paragraph one.\nParagraph two.\nParagraph three.");
+  });
+
+  it("flattens newlines when preserveParagraphs is false", () => {
+    const raw = "Paragraph one.\n\nParagraph   two.\r\n   Paragraph three.";
+    const normalized = normalizeCustomText(raw, { preserveParagraphs: false });
     expect(normalized).toBe("Paragraph one. Paragraph two. Paragraph three.");
+  });
+
+  it("collapses soft line breaks within a paragraph if double newlines are present", () => {
+    const raw = "First sentence.\nSecond sentence.\n\nSecond paragraph.";
+    const normalized = normalizeCustomText(raw);
+    expect(normalized).toBe("First sentence. Second sentence.\nSecond paragraph.");
   });
 
   it("handles non-breaking spaces and ellipses", () => {
@@ -45,8 +57,8 @@ describe("getCustomTextStats", () => {
     expect(stats.estimatedSeconds).toBe(0);
   });
 
-  it("calculates accurate word and character counts", () => {
-    const text = "The quick brown fox jumps over the lazy dog.";
+  it("calculates accurate word and character counts across multiple paragraphs", () => {
+    const text = "The quick brown fox.\n\nJumps over the lazy dog.";
     const stats = getCustomTextStats(text);
     expect(stats.charCount).toBe(text.length);
     expect(stats.wordCount).toBe(9);

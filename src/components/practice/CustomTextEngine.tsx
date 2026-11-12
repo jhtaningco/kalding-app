@@ -418,7 +418,7 @@ export function CustomTextEngine({
                         onChange={(e) => setAutoClean(e.target.checked)}
                         className="accent-primary size-4 rounded"
                       />
-                      <span>Auto-clean quotes & spaces</span>
+                      <span>Auto-clean quotes & format paragraphs</span>
                     </label>
 
                     {inputText && (
@@ -545,7 +545,7 @@ export function CustomTextEngine({
 
             {/* Quick helper footer */}
             <div className="flex items-center justify-between text-xs font-bold text-muted px-2">
-              <span>Tip: Spacebar moves to the next word. Red highlights indicate typos.</span>
+              <span>Tip: Spacebar moves to the next word. Enter or Space advances to the next paragraph.</span>
               <button
                 type="button"
                 onClick={() => setStep("setup")}
