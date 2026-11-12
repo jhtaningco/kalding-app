@@ -1,7 +1,10 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import type { Tables } from "@/types/database";
 import { Kalding } from "@/components/kalding/Kalding";
 import { SpeechBubble } from "@/components/kalding/SpeechBubble";
-import { ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { CheckIcon, StarIcon, XIcon } from "@/components/ui/icons";
 
@@ -20,6 +23,7 @@ export type SessionSummaryProps = {
 };
 
 export function SessionSummary({ results, totalPoints, onRestart }: SessionSummaryProps) {
+  const router = useRouter();
   const correctCount = results.filter((r) => r.correct).length;
   const totalCount = results.length;
   const avgAccuracy = Math.round(
@@ -122,9 +126,16 @@ export function SessionSummary({ results, totalPoints, onRestart }: SessionSumma
           Practice 10 More Words
         </button>
 
-        <ButtonLink href="/" variant="secondary" size="md">
+        <Button
+          onClick={() => {
+            router.refresh();
+            router.push("/");
+          }}
+          variant="secondary"
+          size="md"
+        >
           Return to Home
-        </ButtonLink>
+        </Button>
       </div>
     </div>
   );

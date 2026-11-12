@@ -2,9 +2,9 @@ import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getUserGamification } from "@/lib/gamification/getUserGamification";
 import { TopBar } from "@/components/layout/TopBar";
 import { AppHeader } from "@/components/layout/AppHeader";
-import { calculateStreak } from "@/core/streak";
 import { Kalding } from "@/components/kalding/Kalding";
 import { SpeechBubble } from "@/components/kalding/SpeechBubble";
 import { ButtonLink } from "@/components/ui/Button";
@@ -73,40 +73,12 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key`}
     redirect("/login");
   }
 
-  let totalPoints = 0;
-  let currentStreak = 0;
-
-  try {
-    const { data: attemptsData } = await supabase
-      .from("attempts")
-      .select("points_earned")
-      .eq("user_id", user.id);
-
-    if (attemptsData) {
-      totalPoints = attemptsData.reduce((acc, a) => acc + (a.points_earned || 0), 0);
-    }
-
-    const { data: dailyStatsData } = await supabase
-      .from("daily_stats")
-      .select("date, points, words_practiced")
-      .eq("user_id", user.id);
-
-    if (dailyStatsData) {
-      const activeDates: string[] = [];
-      for (const entry of dailyStatsData) {
-        if (entry.words_practiced > 0 || entry.points > 0) {
-          activeDates.push(entry.date);
-        }
-      }
-      currentStreak = calculateStreak(activeDates).currentStreak;
-    }
-  } catch (err) {
-    console.warn("Failed to load header gamification data:", err);
-  }
+  const { totalXp, streak } = await getUserGamification(supabase, user.id);
+  const currentStreak = streak.currentStreak;
 
   return (
     <div className="flex min-h-screen flex-col">
-      <AppHeader streak={currentStreak} points={totalPoints} />
+      <AppHeader streak={currentStreak} points={totalXp} />
       <main className="flex flex-1 flex-col">{children}</main>
     </div>
   );

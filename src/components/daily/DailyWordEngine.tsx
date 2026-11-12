@@ -1,18 +1,23 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { recordWordAttempt } from "@/lib/srs/recordAttempt";
 import { playCorrectSound, playWrongSound, playLevelUpSound } from "@/lib/sounds";
 import { speak } from "@/lib/tts";
-import { DAILY_WORD_BONUS_XP, validateUserSentence, type SentenceValidationResult } from "@/core/dailyWord";
+import {
+  DAILY_WORD_BONUS_XP,
+  validateUserSentence,
+  type SentenceValidationResult,
+} from "@/core/dailyWord";
 import type { Tables } from "@/types/database";
 import { Kalding, type KaldingMood } from "@/components/kalding/Kalding";
 import { SpeechBubble } from "@/components/kalding/SpeechBubble";
 import { TopBar } from "@/components/layout/TopBar";
 import { Card } from "@/components/ui/Card";
 import { Chip } from "@/components/ui/Chip";
-import { Button, ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { TypingArea } from "@/components/practice/TypingArea";
 import { SentenceTypingArea } from "@/components/practice/SentenceTypingArea";
 import { SpeakerIcon, CheckIcon, StarIcon, ArrowRightIcon } from "@/components/ui/icons";
@@ -37,6 +42,7 @@ export function DailyWordEngine({
   userId,
 }: DailyWordEngineProps) {
   const supabase = createClient();
+  const router = useRouter();
 
   // Always start at Stage 1 so user can repeat the daily word drill anytime
   const [stage, setStage] = useState<DailyStage>(1);
@@ -177,7 +183,15 @@ export function DailyWordEngine({
         console.warn("Failed to persist daily word attempt:", err);
       });
     }
-  }, [validation.isValid, stage4Status, hasClaimedBonus, userId, word, userSentence, supabase]);
+  }, [
+    validation.isValid,
+    stage4Status,
+    hasClaimedBonus,
+    userId,
+    word,
+    userSentence,
+    supabase,
+  ]);
 
   // Keyboard navigation: Enter advances stages when ready
   useEffect(() => {
@@ -200,7 +214,15 @@ export function DailyWordEngine({
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [stage, stage1Status, stage2Status, stage3Status, stage4Status, validation.isValid, handleCompleteDailyWord]);
+  }, [
+    stage,
+    stage1Status,
+    stage2Status,
+    stage3Status,
+    stage4Status,
+    validation.isValid,
+    handleCompleteDailyWord,
+  ]);
 
   // Stage progress values
   const stageNum = stage === "complete" ? 4 : stage;
@@ -211,9 +233,10 @@ export function DailyWordEngine({
 
   if (stage === "complete") {
     mood = "celebrate";
-    speech = earnedInThisRun > 0
-      ? `Magnificent job! You mastered today's word and claimed +${DAILY_WORD_BONUS_XP} XP!`
-      : `Great repetition! Your memory of "${word.word}" is locked in!`;
+    speech =
+      earnedInThisRun > 0
+        ? `Magnificent job! You mastered today's word and claimed +${DAILY_WORD_BONUS_XP} XP!`
+        : `Great repetition! Your memory of "${word.word}" is locked in!`;
   } else if (stage === 1) {
     mood = stage1Status === "correct" ? "happy" : "thinking";
     speech =
@@ -253,7 +276,7 @@ export function DailyWordEngine({
       <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center justify-center gap-6 px-4 py-6 sm:py-8">
         {/* Stage Pills & Date Badge */}
         <div className="flex flex-wrap items-center justify-center gap-2">
-          <Chip variant="mode" className="text-xs font-black uppercase tracking-wider">
+          <Chip variant="mode" className="text-xs font-black tracking-wider uppercase">
             🌟 Vocabulary of the Day
           </Chip>
           <span className="border-border bg-card text-muted rounded-full border px-3 py-0.5 text-xs font-extrabold">
@@ -273,16 +296,14 @@ export function DailyWordEngine({
         {/* Mascot Header */}
         <div className="flex items-center gap-3">
           <Kalding mood={mood} size={92} title={`Kalding is ${mood}`} />
-          <SpeechBubble className="text-sm font-bold sm:text-base">
-            {speech}
-          </SpeechBubble>
+          <SpeechBubble className="text-sm font-bold sm:text-base">{speech}</SpeechBubble>
         </div>
 
         {/* ================= STAGE 1: SPELLING & RECALL ================= */}
         {stage === 1 && (
-          <div className="flex w-full flex-col gap-4 animate-fade-in">
+          <div className="animate-fade-in flex w-full flex-col gap-4">
             <Card className="flex flex-col gap-3 p-6 text-left sm:p-8">
-              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+              <div className="border-border/60 flex items-center justify-between border-b pb-3">
                 <div className="flex items-center gap-2">
                   <Chip variant="neutral" className="text-xs font-bold uppercase">
                     {word.part_of_speech}
@@ -304,7 +325,7 @@ export function DailyWordEngine({
               </div>
 
               <div className="flex flex-col gap-1">
-                <span className="text-muted text-xs font-extrabold uppercase tracking-wider">
+                <span className="text-muted text-xs font-extrabold tracking-wider uppercase">
                   Target Definition
                 </span>
                 <p className="text-foreground text-xl font-bold sm:text-2xl">
@@ -343,9 +364,9 @@ export function DailyWordEngine({
 
         {/* ================= STAGE 2: DEFINITION TYPING ================= */}
         {stage === 2 && (
-          <div className="flex w-full flex-col gap-4 animate-fade-in">
+          <div className="animate-fade-in flex w-full flex-col gap-4">
             <Card className="flex flex-col gap-2 p-6 text-left sm:p-8">
-              <span className="text-muted text-xs font-extrabold uppercase tracking-wider">
+              <span className="text-muted text-xs font-extrabold tracking-wider uppercase">
                 Type the Full Definition
               </span>
               <div className="flex items-baseline gap-3">
@@ -362,12 +383,18 @@ export function DailyWordEngine({
               targetText={word.definition}
               typedText={typedDef}
               onChange={setTypedDef}
-              onSubmit={stage2Status === "idle" ? (val) => handleCheckStage2(val) : () => setStage(3)}
+              onSubmit={
+                stage2Status === "idle"
+                  ? (val) => handleCheckStage2(val)
+                  : () => setStage(3)
+              }
               disabled={stage2Status !== "idle"}
             />
 
             <div className="flex items-center justify-between pt-2">
-              <span className="text-muted text-xs font-bold">Step 2 of 4: Definition</span>
+              <span className="text-muted text-xs font-bold">
+                Step 2 of 4: Definition
+              </span>
               {stage2Status === "correct" ? (
                 <Button size="lg" onClick={() => setStage(3)} className="animate-pop">
                   <span>Continue to Sentence</span>
@@ -388,9 +415,9 @@ export function DailyWordEngine({
 
         {/* ================= STAGE 3: EXAMPLE SENTENCE TRANSCRIPTION ================= */}
         {stage === 3 && (
-          <div className="flex w-full flex-col gap-4 animate-fade-in">
+          <div className="animate-fade-in flex w-full flex-col gap-4">
             <Card className="flex flex-col gap-2 p-6 text-left sm:p-8">
-              <span className="text-muted text-xs font-extrabold uppercase tracking-wider">
+              <span className="text-muted text-xs font-extrabold tracking-wider uppercase">
                 Transcribe Example Sentence
               </span>
               <div className="flex items-baseline gap-3">
@@ -404,12 +431,18 @@ export function DailyWordEngine({
               targetText={word.example_sentence || word.definition}
               typedText={typedSentence}
               onChange={setTypedSentence}
-              onSubmit={stage3Status === "idle" ? (val) => handleCheckStage3(val) : () => setStage(4)}
+              onSubmit={
+                stage3Status === "idle"
+                  ? (val) => handleCheckStage3(val)
+                  : () => setStage(4)
+              }
               disabled={stage3Status !== "idle"}
             />
 
             <div className="flex items-center justify-between pt-2">
-              <span className="text-muted text-xs font-bold">Step 3 of 4: Example Sentence</span>
+              <span className="text-muted text-xs font-bold">
+                Step 3 of 4: Example Sentence
+              </span>
               {stage3Status === "correct" ? (
                 <Button size="lg" onClick={() => setStage(4)} className="animate-pop">
                   <span>Create Your Own Sentence</span>
@@ -430,10 +463,10 @@ export function DailyWordEngine({
 
         {/* ================= STAGE 4: ORIGINAL SENTENCE COMPOSITION ================= */}
         {stage === 4 && (
-          <div className="flex w-full flex-col gap-4 animate-fade-in">
+          <div className="animate-fade-in flex w-full flex-col gap-4">
             <Card className="flex flex-col gap-3 p-6 text-left sm:p-8">
-              <div className="flex items-center justify-between border-b border-border/60 pb-2">
-                <span className="text-muted text-xs font-extrabold uppercase tracking-wider">
+              <div className="border-border/60 flex items-center justify-between border-b pb-2">
+                <span className="text-muted text-xs font-extrabold tracking-wider uppercase">
                   Step 4 of 4: Original Sentence
                 </span>
                 <span className="border-primary/40 bg-primary/10 text-primary rounded-full border px-2.5 py-0.5 text-xs font-extrabold">
@@ -446,7 +479,8 @@ export function DailyWordEngine({
                   Write Your Own Sentence
                 </h2>
                 <p className="text-muted text-xs leading-relaxed">
-                  Compose an authentic sentence using <strong>&ldquo;{word.word}&rdquo;</strong> in real context.
+                  Compose an authentic sentence using{" "}
+                  <strong>&ldquo;{word.word}&rdquo;</strong> in real context.
                 </p>
               </div>
 
@@ -477,7 +511,8 @@ export function DailyWordEngine({
                       : "border-border bg-card text-muted"
                   }`}
                 >
-                  {validation.wordCount >= 4 ? "✓" : "○"} At least 4 words ({validation.wordCount}/4)
+                  {validation.wordCount >= 4 ? "✓" : "○"} At least 4 words (
+                  {validation.wordCount}/4)
                 </span>
                 <span
                   className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 font-extrabold transition-colors ${
@@ -509,8 +544,8 @@ export function DailyWordEngine({
 
         {/* ================= STAGE COMPLETE: VICTORY & SUMMARY ================= */}
         {stage === "complete" && (
-          <Card className="flex w-full flex-col items-center gap-6 p-6 text-center shadow-xl sm:p-10 animate-pop">
-            <div className="border-primary/50 bg-primary/10 text-primary flex items-center gap-2 rounded-full border-2 px-4 py-1 text-xs font-black uppercase tracking-wider">
+          <Card className="animate-pop flex w-full flex-col items-center gap-6 p-6 text-center shadow-xl sm:p-10">
+            <div className="border-primary/50 bg-primary/10 text-primary flex items-center gap-2 rounded-full border-2 px-4 py-1 text-xs font-black tracking-wider uppercase">
               <StarIcon size={16} /> Vocabulary of the Day Mastered!
             </div>
 
@@ -527,21 +562,29 @@ export function DailyWordEngine({
             </div>
 
             {/* Bonus Points Badge */}
-            <div className="flex items-center gap-6 rounded-2xl border-2 border-border/80 bg-background/60 p-4">
+            <div className="border-border/80 bg-background/60 flex items-center gap-6 rounded-2xl border-2 p-4">
               <div className="flex flex-col items-center">
-                <span className="text-muted text-[11px] font-extrabold uppercase">XP Awarded</span>
+                <span className="text-muted text-[11px] font-extrabold uppercase">
+                  XP Awarded
+                </span>
                 {earnedInThisRun > 0 ? (
-                  <span className="text-primary text-2xl font-black">+{DAILY_WORD_BONUS_XP} XP</span>
+                  <span className="text-primary text-2xl font-black">
+                    +{DAILY_WORD_BONUS_XP} XP
+                  </span>
                 ) : (
                   <div className="flex flex-col items-center">
                     <span className="text-muted text-xl font-black">+0 XP</span>
-                    <span className="text-muted text-[10px] font-bold">Bonus already claimed today</span>
+                    <span className="text-muted text-[10px] font-bold">
+                      Bonus already claimed today
+                    </span>
                   </div>
                 )}
               </div>
-              <div className="h-8 w-px bg-border" />
+              <div className="bg-border h-8 w-px" />
               <div className="flex flex-col items-center">
-                <span className="text-muted text-[11px] font-extrabold uppercase">Daily Status</span>
+                <span className="text-muted text-[11px] font-extrabold uppercase">
+                  Daily Status
+                </span>
                 <span className="text-success-fg flex items-center gap-1 text-base font-black">
                   <CheckIcon size={18} /> Completed
                 </span>
@@ -568,9 +611,16 @@ export function DailyWordEngine({
               >
                 Practice Again
               </Button>
-              <ButtonLink href="/" size="lg" className="min-w-[160px]">
+              <Button
+                onClick={() => {
+                  router.refresh();
+                  router.push("/");
+                }}
+                size="lg"
+                className="min-w-[160px]"
+              >
                 Home Dashboard
-              </ButtonLink>
+              </Button>
             </div>
           </Card>
         )}

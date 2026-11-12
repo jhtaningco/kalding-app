@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
+import { getUserGamification } from "@/lib/gamification/getUserGamification";
 import { ReviewManager, type TrackedWordItem } from "./review-manager";
 import type { Tables } from "@/types/database";
 
@@ -88,28 +89,21 @@ export default async function ReviewPage() {
     }
   }
 
-  // 3. Fetch daily points
-  let currentPoints = 0;
+  // 3. Fetch user gamification (real XP & streak)
+  let initialPoints = 0;
+  let initialStreak = 0;
   if (user) {
-    const todayStr = new Date().toISOString().split("T")[0];
-    const { data: dailyData } = await supabase
-      .from("daily_stats")
-      .select("points")
-      .eq("user_id", user.id)
-      .eq("date", todayStr)
-      .maybeSingle();
-
-    if (dailyData?.points) {
-      currentPoints = dailyData.points;
-    }
+    const gamification = await getUserGamification(supabase, user.id);
+    initialPoints = gamification.totalXp;
+    initialStreak = gamification.streak.currentStreak;
   }
 
   return (
     <ReviewManager
       trackedWords={trackedWords}
       fallbackWords={fallbackWords}
-      initialPoints={currentPoints}
-      initialStreak={0}
+      initialPoints={initialPoints}
+      initialStreak={initialStreak}
       userId={user?.id}
     />
   );

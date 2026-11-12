@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getUserGamification } from "@/lib/gamification/getUserGamification";
 import { calculateStreak } from "@/core/streak";
 import { calculateLevel } from "@/core/levels";
 import { calculateDailyGoalProgress } from "@/core/dailyGoal";
@@ -36,33 +37,20 @@ export default async function HomePage() {
       .maybeSingle();
     profile = profileData;
 
-    // 2. Fetch total points from attempts
-    const { data: attemptsData } = await supabase
-      .from("attempts")
-      .select("points_earned")
-      .eq("user_id", user.id);
+    // 2. Fetch user gamification (single source of truth for total XP and streak)
+    const gamification = await getUserGamification(supabase, user.id);
+    totalXp = gamification.totalXp;
+    activeDates.push(...gamification.activeDates);
 
-    if (attemptsData) {
-      totalXp = attemptsData.reduce((acc, a) => acc + (a.points_earned || 0), 0);
-    }
-
-    // 3. Fetch daily stats for streak & today's goal
-    const { data: dailyStatsData } = await supabase
+    // 3. Fetch today's points for daily goal
+    const todayStr = new Date().toISOString().split("T")[0];
+    const { data: todayDaily } = await supabase
       .from("daily_stats")
-      .select("date, points, words_practiced")
-      .eq("user_id", user.id);
-
-    if (dailyStatsData) {
-      const todayStr = new Date().toISOString().split("T")[0];
-      for (const entry of dailyStatsData) {
-        if (entry.words_practiced > 0 || entry.points > 0) {
-          activeDates.push(entry.date);
-        }
-        if (entry.date === todayStr) {
-          todayPoints = entry.points;
-        }
-      }
-    }
+      .select("points")
+      .eq("user_id", user.id)
+      .eq("date", todayStr)
+      .maybeSingle();
+    todayPoints = todayDaily?.points ?? 0;
   }
 
   // 4. Fetch words for Vocabulary of the Day (deterministically ordered)

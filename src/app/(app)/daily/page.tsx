@@ -3,6 +3,7 @@ import path from "node:path";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getUserGamification } from "@/lib/gamification/getUserGamification";
 import { getDailyWordDateKey, getWordOfTheDay } from "@/core/dailyWord";
 import { DailyWordEngine } from "@/components/daily/DailyWordEngine";
 import type { Tables } from "@/types/database";
@@ -63,16 +64,17 @@ export default async function DailyWordPage() {
     notFound();
   }
 
-  // 2. Fetch user points & completion status for today
+  // 2. Fetch user gamification (real XP & streak) & completion status for today
   let initialPoints = 0;
+  let initialStreak = 0;
   let isCompletedToday = false;
 
   if (user) {
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
 
-    const [{ data: userAttempts }, { data: todayDailyAttempts }] = await Promise.all([
-      supabase.from("attempts").select("points_earned").eq("user_id", user.id),
+    const [gamification, { data: todayDailyAttempts }] = await Promise.all([
+      getUserGamification(supabase, user.id),
       supabase
         .from("attempts")
         .select("id")
@@ -81,9 +83,8 @@ export default async function DailyWordPage() {
         .gte("created_at", todayStart.toISOString()),
     ]);
 
-    if (userAttempts) {
-      initialPoints = userAttempts.reduce((acc, a) => acc + (a.points_earned || 0), 0);
-    }
+    initialPoints = gamification.totalXp;
+    initialStreak = gamification.streak.currentStreak;
     isCompletedToday = (todayDailyAttempts?.length ?? 0) > 0;
   }
 
@@ -93,7 +94,7 @@ export default async function DailyWordPage() {
       dateKey={dateKey}
       initialCompleted={isCompletedToday}
       initialPoints={initialPoints}
-      initialStreak={1}
+      initialStreak={initialStreak}
       userId={user?.id}
     />
   );

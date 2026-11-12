@@ -3,6 +3,7 @@ import path from "node:path";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getUserGamification } from "@/lib/gamification/getUserGamification";
 import { selectPracticeWords } from "@/core/wordSelection";
 import { PracticeEngine } from "./practice-engine";
 import { WordRushEngine } from "@/components/practice/WordRushEngine";
@@ -164,8 +165,9 @@ export default async function PracticePage({
     }
   }
 
-  // 2. Fetch user's SRS progress & points
+  // 2. Fetch user gamification (real XP & streak) & SRS progress
   let initialPoints = 0;
+  let initialStreak = 0;
   let userProgress: {
     word_id: string;
     times_seen: number;
@@ -173,17 +175,16 @@ export default async function PracticePage({
   }[] = [];
 
   if (user) {
-    const [{ data: userAttempts }, { data: progressRows }] = await Promise.all([
-      supabase.from("attempts").select("points_earned").eq("user_id", user.id),
+    const [gamification, { data: progressRows }] = await Promise.all([
+      getUserGamification(supabase, user.id),
       supabase
         .from("user_words")
         .select("word_id, times_seen, next_review_at")
         .eq("user_id", user.id),
     ]);
 
-    if (userAttempts) {
-      initialPoints = userAttempts.reduce((acc, a) => acc + (a.points_earned || 0), 0);
-    }
+    initialPoints = gamification.totalXp;
+    initialStreak = gamification.streak.currentStreak;
     if (progressRows) {
       userProgress = progressRows;
     }
@@ -203,7 +204,7 @@ export default async function PracticePage({
       <WordRushEngine
         words={sessionWords}
         initialPoints={initialPoints}
-        initialStreak={1}
+        initialStreak={initialStreak}
         userId={user?.id}
       />
     );
@@ -215,7 +216,7 @@ export default async function PracticePage({
       mode={config.modeKey}
       modeName={config.name}
       initialPoints={initialPoints}
-      initialStreak={1}
+      initialStreak={initialStreak}
       userId={user?.id}
     />
   );
