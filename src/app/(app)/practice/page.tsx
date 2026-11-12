@@ -11,6 +11,7 @@ import {
   SpeakerIcon,
   StarIcon,
   RefreshIcon,
+  ClipboardIcon,
 } from "@/components/ui/icons";
 
 export const metadata: Metadata = {
@@ -30,6 +31,16 @@ interface ModeCardInfo {
 }
 
 const TYPING_MODES: ModeCardInfo[] = [
+  {
+    key: "custom",
+    href: "/practice/custom",
+    title: "Paste & Type",
+    tag: "Custom Paragraph",
+    badgeText: "New",
+    description:
+      "Paste any article, essay, or speech to practice real-world typing. Choose your own learning material!",
+    icon: ClipboardIcon,
+  },
   {
     key: "type_def",
     href: "/practice/type_def",
@@ -166,7 +177,7 @@ export default function PracticeHubPage() {
           </span>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {TYPING_MODES.map((mode) => {
             const Icon = mode.icon;
             return (
