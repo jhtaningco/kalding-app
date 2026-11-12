@@ -9,6 +9,13 @@ import type { WordItem } from "./wordSelection";
 export const DAILY_WORD_BONUS_XP = 50;
 
 /**
+ * Fixed baseline size for the curated daily vocabulary pool.
+ * Anchoring to 150 ensures that when learners add custom words to the database,
+ * today's Word of the Day never shifts or changes unpredictably.
+ */
+export const CORE_DAILY_WORD_POOL_SIZE = 150;
+
+/**
  * Returns formatted YYYY-MM-DD string for a given date.
  */
 export function getDailyWordDateKey(d: Date = new Date()): string {
@@ -22,9 +29,11 @@ export function getDailyWordDateKey(d: Date = new Date()): string {
  * Deterministically computes the Word of the Day index based on the date string (YYYY-MM-DD).
  * Same date produces the identical word for all learners.
  * Consecutive days advance through the word library smoothly.
+ * Anchored to the core pool size so adding custom words never disrupts the daily rotation.
  */
 export function getDailyWordIndex(dateKey: string, wordCount: number): number {
   if (wordCount <= 0) return 0;
+  const poolSize = Math.min(wordCount, CORE_DAILY_WORD_POOL_SIZE);
 
   const parts = dateKey.split("-").map(Number);
   const year = parts[0] || 2026;
@@ -37,13 +46,16 @@ export function getDailyWordIndex(dateKey: string, wordCount: number): number {
     (Date.UTC(year, month - 1, day) - Date.UTC(2026, 0, 1)) / (1000 * 60 * 60 * 24),
   );
 
-  return Math.abs(dayIndex) % wordCount;
+  return Math.abs(dayIndex) % poolSize;
 }
 
 /**
  * Selects today's Word of the Day from the available words.
  */
-export function getWordOfTheDay<T extends WordItem>(words: T[], dateKey?: string): T | null {
+export function getWordOfTheDay<T extends WordItem>(
+  words: T[],
+  dateKey?: string,
+): T | null {
   if (!words || words.length === 0) return null;
   const key = dateKey || getDailyWordDateKey();
   const index = getDailyWordIndex(key, words.length);
@@ -93,7 +105,8 @@ export function validateUserSentence(
   // Check if target word (or its root stem) appears in the sentence
   const targetLower = targetWord.toLowerCase().replace(/[^a-z]/g, "");
   // Stemming fallback: root of at least 4 letters
-  const stem = targetLower.length > 5 ? targetLower.slice(0, targetLower.length - 2) : targetLower;
+  const stem =
+    targetLower.length > 5 ? targetLower.slice(0, targetLower.length - 2) : targetLower;
 
   const lowerSentence = trimmed.toLowerCase();
   const regex = new RegExp(`\\b${targetLower}\\b`, "i");
@@ -115,7 +128,8 @@ export function validateUserSentence(
   if (!hasPunctuation) {
     return {
       isValid: false,
-      message: "End your sentence with punctuation (period, exclamation point, or question mark).",
+      message:
+        "End your sentence with punctuation (period, exclamation point, or question mark).",
       hasTargetWord: true,
       hasPunctuation: false,
       wordCount,

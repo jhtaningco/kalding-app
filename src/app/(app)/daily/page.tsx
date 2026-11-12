@@ -9,7 +9,8 @@ import type { Tables } from "@/types/database";
 
 export const metadata: Metadata = {
   title: "Vocabulary of the Day | Kalding English",
-  description: "Focus on today's single vocabulary word with spelling, definition typing, and sentence creation.",
+  description:
+    "Focus on today's single vocabulary word with spelling, definition typing, and sentence creation.",
 };
 
 export default async function DailyWordPage() {
@@ -18,8 +19,12 @@ export default async function DailyWordPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 1. Fetch starter words
-  const { data: dbWords } = await supabase.from("words").select("*");
+  // 1. Fetch starter words (deterministically ordered)
+  const { data: dbWords } = await supabase
+    .from("words")
+    .select("*")
+    .order("created_at", { ascending: true })
+    .order("id", { ascending: true });
   let words: Tables<"words">[] = dbWords ?? [];
 
   if (words.length === 0) {

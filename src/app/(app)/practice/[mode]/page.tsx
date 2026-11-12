@@ -125,8 +125,12 @@ export default async function PracticePage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // 1. Fetch entire word bank (150 starter words)
-  const { data: dbWords } = await supabase.from("words").select("*");
+  // 1. Fetch entire word bank (deterministically ordered)
+  const { data: dbWords } = await supabase
+    .from("words")
+    .select("*")
+    .order("created_at", { ascending: true })
+    .order("id", { ascending: true });
 
   let words: Tables<"words">[] = dbWords ?? [];
 
@@ -162,12 +166,19 @@ export default async function PracticePage({
 
   // 2. Fetch user's SRS progress & points
   let initialPoints = 0;
-  let userProgress: { word_id: string; times_seen: number; next_review_at?: string | null }[] = [];
+  let userProgress: {
+    word_id: string;
+    times_seen: number;
+    next_review_at?: string | null;
+  }[] = [];
 
   if (user) {
     const [{ data: userAttempts }, { data: progressRows }] = await Promise.all([
       supabase.from("attempts").select("points_earned").eq("user_id", user.id),
-      supabase.from("user_words").select("word_id, times_seen, next_review_at").eq("user_id", user.id),
+      supabase
+        .from("user_words")
+        .select("word_id, times_seen, next_review_at")
+        .eq("user_id", user.id),
     ]);
 
     if (userAttempts) {

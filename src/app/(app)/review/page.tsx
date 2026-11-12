@@ -7,8 +7,7 @@ import type { Tables } from "@/types/database";
 
 export const metadata: Metadata = {
   title: "Review Queue (SRS) | Kalding English",
-  description:
-    "Spaced repetition review queue to lock vocabulary into long-term memory.",
+  description: "Spaced repetition review queue to lock vocabulary into long-term memory.",
 };
 
 export default async function ReviewPage() {
@@ -30,7 +29,9 @@ export default async function ReviewPage() {
 
     if (userWordsData) {
       trackedWords = userWordsData
-        .filter((item): item is typeof item & { word: Tables<"words"> } => Boolean(item.word))
+        .filter((item): item is typeof item & { word: Tables<"words"> } =>
+          Boolean(item.word),
+        )
         .map((item) => ({
           word: item.word,
           srs: {
@@ -50,7 +51,12 @@ export default async function ReviewPage() {
   }
 
   // 2. Fetch starter fallback words from database or seed file
-  const { data: dbWords } = await supabase.from("words").select("*").limit(20);
+  const { data: dbWords } = await supabase
+    .from("words")
+    .select("*")
+    .order("created_at", { ascending: true })
+    .order("id", { ascending: true })
+    .limit(20);
   if (dbWords && dbWords.length > 0) {
     fallbackWords = dbWords;
   } else {

@@ -65,8 +65,12 @@ export default async function HomePage() {
     }
   }
 
-  // 4. Fetch words for Vocabulary of the Day
-  const { data: dbWords } = await supabase.from("words").select("*");
+  // 4. Fetch words for Vocabulary of the Day (deterministically ordered)
+  const { data: dbWords } = await supabase
+    .from("words")
+    .select("*")
+    .order("created_at", { ascending: true })
+    .order("id", { ascending: true });
   const words = dbWords ?? [];
   const dateKey = getDailyWordDateKey(new Date());
   const dailyWord = getWordOfTheDay(words, dateKey);
