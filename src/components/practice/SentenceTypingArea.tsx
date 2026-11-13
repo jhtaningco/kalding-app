@@ -23,30 +23,66 @@ export function SentenceTypingArea({
   const containerRef = useRef<HTMLDivElement>(null);
   const activeCursorRef = useRef<HTMLSpanElement>(null);
 
-  // Auto focus input on mount and when clicking the area
+  // Auto focus input on mount without scrolling the viewport
   useEffect(() => {
     if (!disabled && inputRef.current) {
-      inputRef.current.focus();
+      inputRef.current.focus({ preventScroll: true });
     }
   }, [disabled, targetText]);
 
   const currentIndex = typedText.length;
 
-  // Auto-scroll active cursor smoothly into view as the user types across lines and paragraphs
+  // Auto-scroll the container to keep active cursor comfortably in view
+  // NEVER scrolls window or causes jumping to top
   useEffect(() => {
-    if (activeCursorRef.current) {
-      activeCursorRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
+    const container = containerRef.current;
+    const cursor = activeCursorRef.current;
+    if (!container || !cursor) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const cursorRect = cursor.getBoundingClientRect();
+
+    const relativeTop = cursorRect.top - containerRect.top;
+    const relativeBottom = cursorRect.bottom - containerRect.top;
+
+    const topThreshold = 60;
+    const bottomThreshold = containerRect.height - 100;
+
+    if (relativeBottom > bottomThreshold) {
+      container.scrollTop += relativeBottom - bottomThreshold;
+    } else if (relativeTop < topThreshold) {
+      container.scrollTop -= topThreshold - relativeTop;
     }
   }, [currentIndex]);
 
+  // Keep input focused when clicking the container without scrolling
   const handleContainerClick = () => {
     if (!disabled && inputRef.current) {
-      inputRef.current.focus();
+      inputRef.current.focus({ preventScroll: true });
     }
   };
+
+  // Re-focus on typing keypress anywhere on window
+  useEffect(() => {
+    const handleWindowKeyDown = (e: KeyboardEvent) => {
+      if (disabled || !inputRef.current) return;
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" || target.tagName === "TEXTAREA") &&
+        target !== inputRef.current
+      ) {
+        return;
+      }
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (document.activeElement !== inputRef.current) {
+        inputRef.current.focus({ preventScroll: true });
+      }
+    };
+
+    window.addEventListener("keydown", handleWindowKeyDown);
+    return () => window.removeEventListener("keydown", handleWindowKeyDown);
+  }, [disabled]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (disabled) return;
@@ -133,11 +169,11 @@ export function SentenceTypingArea({
     <div
       ref={containerRef}
       onClick={handleContainerClick}
-      className={`border-border bg-card relative flex w-full flex-col gap-4 rounded-3xl border-2 p-6 shadow-sm transition-all sm:p-8 max-h-[70vh] overflow-y-auto ${
+      className={`border-border bg-card kalding-scrollbar relative flex w-full flex-col gap-4 rounded-3xl border-2 p-6 shadow-sm transition-all sm:p-8 max-h-[60vh] sm:max-h-[65vh] overflow-y-auto ${
         disabled ? "opacity-90 cursor-default" : "cursor-text hover:border-primary/60"
       }`}
     >
-      {/* Hidden textarea capturing user input seamlessly */}
+      {/* Hidden textarea fixed off viewport flow so typing never triggers browser scroll-to-zero */}
       <textarea
         ref={inputRef}
         value={typedText}
@@ -151,7 +187,8 @@ export function SentenceTypingArea({
         spellCheck="false"
         rows={1}
         inputMode="text"
-        className="absolute inset-0 size-full cursor-text opacity-0"
+        className="fixed opacity-0 pointer-events-none"
+        style={{ top: 0, left: 0, width: 1, height: 1 }}
         aria-label="Sentence typing input"
       />
 
@@ -231,7 +268,10 @@ export function SentenceTypingArea({
 
         {/* Cursor at the end of the text */}
         {currentIndex >= targetText.length && !disabled && (
-          <span className="bg-primary inline-block h-5 w-[2.5px] animate-pulse align-middle rounded-full -mt-2" />
+          <span
+            ref={activeCursorRef}
+            className="bg-primary inline-block h-5 w-[2.5px] animate-pulse align-middle rounded-full -mt-2"
+          />
         )}
       </div>
 

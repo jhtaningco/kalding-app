@@ -184,6 +184,65 @@ body {
   filter: var(--kalding-filter);
 }
 
+/*
+ * Kalding Custom Scrollbars
+ * Sleek, pill-shaped, themed scrollbars matching dark navy and light mint themes.
+ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--border) 75%, var(--foreground) 25%) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--border) 75%, var(--foreground) 25%);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.kalding-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--border) 75%, var(--foreground) 25%) transparent;
+}
+
+.kalding-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.kalding-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0;
+}
+
+.kalding-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--border) 75%, var(--foreground) 25%);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.kalding-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
