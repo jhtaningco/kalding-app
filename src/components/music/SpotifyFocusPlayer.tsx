@@ -24,6 +24,7 @@ function getDefaultEmbedUrl(): string {
 
 export function SpotifyFocusPlayer() {
   const [isOpen, setIsOpen] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const [activePresetId, setActivePresetId] = useState<string>(() => {
     if (typeof window === "undefined") return DEFAULT_SPOTIFY_PRESET.id;
@@ -62,13 +63,22 @@ export function SpotifyFocusPlayer() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.altKey && (e.key === "m" || e.key === "M")) {
         e.preventDefault();
-        setIsOpen((prev) => !prev);
+        setIsOpen((prev) => {
+          const next = !prev;
+          if (next) setHasInteracted(true);
+          return next;
+        });
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    setHasInteracted(true);
+  };
 
   const handleSelectPreset = (preset: SpotifyPreset) => {
     const parsed = parseSpotifyUrl(preset.url);
@@ -78,6 +88,7 @@ export function SpotifyFocusPlayer() {
     setEmbedUrl(parsed.embedUrl);
     setShowCustomInput(false);
     setCustomError(null);
+    setHasInteracted(true);
 
     try {
       localStorage.setItem(STORAGE_KEY_URL, parsed.embedUrl);
@@ -99,6 +110,7 @@ export function SpotifyFocusPlayer() {
 
     setActivePresetId("custom");
     setEmbedUrl(parsed.embedUrl);
+    setHasInteracted(true);
 
     try {
       localStorage.setItem(STORAGE_KEY_URL, parsed.embedUrl);
@@ -118,11 +130,11 @@ export function SpotifyFocusPlayer() {
       aria-label="Spotify Focus Beats"
       className="fixed bottom-4 right-4 z-40 select-none print:hidden"
     >
-      {/* COLLAPSED PILL */}
-      {!isOpen && (
+      {/* 1. COLLAPSED FLOATING PILL */}
+      <div className={isOpen ? "hidden" : "block"}>
         <button
           type="button"
-          onClick={() => setIsOpen(true)}
+          onClick={handleOpen}
           className="border-border bg-card/95 hover:border-primary/80 hover:bg-card text-foreground group flex items-center gap-2 rounded-full border-2 px-3.5 py-2 shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:shadow-xl active:scale-95"
           title="Open Spotify Focus Beats (Alt+M)"
         >
@@ -133,11 +145,31 @@ export function SpotifyFocusPlayer() {
           <span className="border-border/60 bg-background/80 text-muted rounded-full border px-2 py-0.5 text-[10px] font-bold">
             {activePreset ? `${activePreset.emoji} ${activePreset.name}` : "Music"}
           </span>
-        </button>
-      )}
 
-      {/* EXPANDED MINI-PLAYER CARD */}
-      {isOpen && (
+          {/* Equalizer pulse indicator when music has been started */}
+          {hasInteracted && (
+            <span
+              className="flex items-center gap-0.5 ml-0.5 text-primary"
+              title="Music playing in background"
+            >
+              <span className="h-2 w-0.5 rounded-full bg-primary animate-pulse" />
+              <span className="h-3.5 w-0.5 rounded-full bg-primary animate-pulse delay-75" />
+              <span className="h-2.5 w-0.5 rounded-full bg-primary animate-pulse delay-150" />
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* 2. EXPANDED MINI-PLAYER CARD
+          Note: We keep the card mounted in the DOM when collapsed so the Spotify iframe
+          does NOT reload or pause music! */}
+      <div
+        className={`transition-all duration-200 origin-bottom-right ${
+          isOpen
+            ? "opacity-100 scale-100 pointer-events-auto"
+            : "opacity-0 scale-95 pointer-events-none absolute bottom-0 right-0 max-h-0 max-w-0 overflow-hidden"
+        }`}
+      >
         <div className="border-border bg-card/95 text-foreground flex w-80 flex-col gap-3 rounded-3xl border-2 p-3.5 shadow-2xl backdrop-blur-md sm:w-96 animate-pop">
           {/* Card Header */}
           <div className="flex items-center justify-between border-b border-border/80 pb-2.5">
@@ -162,7 +194,7 @@ export function SpotifyFocusPlayer() {
               type="button"
               onClick={() => setIsOpen(false)}
               className="text-muted hover:bg-border/60 hover:text-foreground flex size-7 items-center justify-center rounded-xl transition-colors"
-              title="Minimize player (Alt+M)"
+              title="Minimize player — music keeps playing! (Alt+M)"
             >
               <XIcon size={16} />
             </button>
@@ -232,7 +264,7 @@ export function SpotifyFocusPlayer() {
             </form>
           )}
 
-          {/* Spotify Official Embed iframe */}
+          {/* Spotify Official Embed iframe (Never unmounted so audio streams continuously) */}
           <div className="overflow-hidden rounded-2xl border border-border/80 shadow-inner bg-background/60">
             <iframe
               src={embedUrl}
@@ -247,13 +279,13 @@ export function SpotifyFocusPlayer() {
 
           {/* Helper Tips Footer */}
           <div className="flex items-center justify-between text-[10px] font-bold text-muted px-1">
-            <span>Signed into Spotify in browser = full songs</span>
+            <span>Minimizing keeps music playing in background</span>
             <span className="border-border/60 bg-background/80 rounded px-1.5 py-0.5 font-mono">
               Alt+M
             </span>
           </div>
         </div>
-      )}
+      </div>
     </aside>
   );
 }
