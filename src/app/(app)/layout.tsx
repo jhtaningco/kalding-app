@@ -9,6 +9,7 @@ import { Kalding } from "@/components/kalding/Kalding";
 import { SpeechBubble } from "@/components/kalding/SpeechBubble";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { SpotifyFocusPlayer } from "@/components/music/SpotifyFocusPlayer";
 
 export const instant = false;
 
@@ -80,6 +81,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key`}
     <div className="flex min-h-screen flex-col">
       <AppHeader streak={currentStreak} points={totalXp} />
       <main className="flex flex-1 flex-col">{children}</main>
+      <SpotifyFocusPlayer />
     </div>
   );
 }
