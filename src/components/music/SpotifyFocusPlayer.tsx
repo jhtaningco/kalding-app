@@ -5,13 +5,24 @@ import {
   SPOTIFY_FOCUS_PRESETS,
   DEFAULT_SPOTIFY_PRESET,
   parseSpotifyUrl,
+  createCustomSpotifyPlaylist,
   type SpotifyPreset,
+  type CustomSpotifyPlaylist,
 } from "@/core/spotify";
-import { HeadphonesIcon, XIcon, MusicIcon } from "@/components/ui/icons";
+import {
+  HeadphonesIcon,
+  XIcon,
+  MusicIcon,
+  PlusIcon,
+  TrashIcon,
+} from "@/components/ui/icons";
 
 const STORAGE_KEY_URL = "kalding_spotify_embed_url";
 const STORAGE_KEY_PRESET_ID = "kalding_spotify_preset_id";
 const STORAGE_KEY_CUSTOM_LINK = "kalding_spotify_custom_link";
+const STORAGE_KEY_CUSTOM_PLAYLISTS = "kalding_custom_spotify_playlists";
+
+const EMOJI_PRESETS = ["🎧", "⚡", "☕", "🧠", "🎹", "🌿", "🌙", "🚀", "📚", "🔥"];
 
 function getDefaultEmbedUrl(): string {
   return (
@@ -47,6 +58,34 @@ export function SpotifyFocusPlayer() {
     }
   });
 
+  // User's custom named playlists
+  const [customPlaylists, setCustomPlaylists] = useState<CustomSpotifyPlaylist[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_CUSTOM_PLAYLISTS);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const persistCustomPlaylists = (updated: CustomSpotifyPlaylist[]) => {
+    setCustomPlaylists(updated);
+    try {
+      localStorage.setItem(STORAGE_KEY_CUSTOM_PLAYLISTS, JSON.stringify(updated));
+    } catch {
+      // Ignore
+    }
+  };
+
+  // Add Playlist Form State
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newUrl, setNewUrl] = useState("");
+  const [newEmoji, setNewEmoji] = useState("🎧");
+  const [addError, setAddError] = useState<string | null>(null);
+
+  // Quick single URL input state
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customLinkInput, setCustomLinkInput] = useState<string>(() => {
     if (typeof window === "undefined") return "";
@@ -87,6 +126,7 @@ export function SpotifyFocusPlayer() {
     setActivePresetId(preset.id);
     setEmbedUrl(parsed.embedUrl);
     setShowCustomInput(false);
+    setShowAddForm(false);
     setCustomError(null);
     setHasInteracted(true);
 
@@ -95,6 +135,63 @@ export function SpotifyFocusPlayer() {
       localStorage.setItem(STORAGE_KEY_PRESET_ID, preset.id);
     } catch {
       // Ignore
+    }
+  };
+
+  const handleSelectCustomPlaylist = (playlist: CustomSpotifyPlaylist) => {
+    setActivePresetId(playlist.id);
+    setEmbedUrl(playlist.embedUrl);
+    setShowCustomInput(false);
+    setShowAddForm(false);
+    setCustomError(null);
+    setHasInteracted(true);
+
+    try {
+      localStorage.setItem(STORAGE_KEY_URL, playlist.embedUrl);
+      localStorage.setItem(STORAGE_KEY_PRESET_ID, playlist.id);
+    } catch {
+      // Ignore
+    }
+  };
+
+  const handleAddCustomPlaylist = (e: React.FormEvent) => {
+    e.preventDefault();
+    setAddError(null);
+
+    const result = createCustomSpotifyPlaylist(newName, newUrl, newEmoji);
+    if (!result.success) {
+      setAddError(result.error);
+      return;
+    }
+
+    const created = result.playlist;
+    const updated = [created, ...customPlaylists];
+    persistCustomPlaylists(updated);
+
+    // Immediately play the new custom playlist
+    setActivePresetId(created.id);
+    setEmbedUrl(created.embedUrl);
+    setHasInteracted(true);
+    setShowAddForm(false);
+    setNewName("");
+    setNewUrl("");
+    setNewEmoji("🎧");
+
+    try {
+      localStorage.setItem(STORAGE_KEY_URL, created.embedUrl);
+      localStorage.setItem(STORAGE_KEY_PRESET_ID, created.id);
+    } catch {
+      // Ignore
+    }
+  };
+
+  const handleDeleteCustomPlaylist = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = customPlaylists.filter((p) => p.id !== id);
+    persistCustomPlaylists(updated);
+
+    if (activePresetId === id) {
+      handleSelectPreset(DEFAULT_SPOTIFY_PRESET);
     }
   };
 
@@ -124,6 +221,12 @@ export function SpotifyFocusPlayer() {
   const activePreset = SPOTIFY_FOCUS_PRESETS.find(
     (p) => p.id === activePresetId,
   );
+  const activeCustom = customPlaylists.find((p) => p.id === activePresetId);
+  const currentDisplayName = activePreset
+    ? `${activePreset.emoji} ${activePreset.name}`
+    : activeCustom
+      ? `${activeCustom.emoji} ${activeCustom.name}`
+      : "Custom Track";
 
   return (
     <aside
@@ -142,8 +245,8 @@ export function SpotifyFocusPlayer() {
             <HeadphonesIcon size={14} />
           </span>
           <span className="text-xs font-black tracking-wide">Focus Beats</span>
-          <span className="border-border/60 bg-background/80 text-muted rounded-full border px-2 py-0.5 text-[10px] font-bold">
-            {activePreset ? `${activePreset.emoji} ${activePreset.name}` : "Music"}
+          <span className="border-border/60 bg-background/80 text-muted rounded-full border px-2 py-0.5 text-[10px] font-bold max-w-[120px] truncate">
+            {currentDisplayName}
           </span>
 
           {/* Equalizer pulse indicator when music has been started */}
@@ -170,7 +273,7 @@ export function SpotifyFocusPlayer() {
             : "opacity-0 scale-95 pointer-events-none absolute bottom-0 right-0 max-h-0 max-w-0 overflow-hidden"
         }`}
       >
-        <div className="border-border bg-card/95 text-foreground flex w-80 flex-col gap-3 rounded-3xl border-2 p-3.5 shadow-2xl backdrop-blur-md sm:w-96 animate-pop">
+        <div className="border-border bg-card/95 text-foreground flex w-80 flex-col gap-3 rounded-3xl border-2 p-3.5 shadow-2xl backdrop-blur-md sm:w-[420px] animate-pop">
           {/* Card Header */}
           <div className="flex items-center justify-between border-b border-border/80 pb-2.5">
             <div className="flex items-center gap-2">
@@ -185,7 +288,11 @@ export function SpotifyFocusPlayer() {
                   </span>
                 </div>
                 <span className="text-muted text-[10px] font-bold">
-                  {activePreset ? activePreset.description : "Custom Study Playlist"}
+                  {activePreset
+                    ? activePreset.description
+                    : activeCustom
+                      ? `Custom: ${activeCustom.name}`
+                      : "Custom Study Stream"}
                 </span>
               </div>
             </div>
@@ -200,8 +307,9 @@ export function SpotifyFocusPlayer() {
             </button>
           </div>
 
-          {/* Quick Preset Pills */}
-          <div className="flex flex-wrap items-center gap-1.5">
+          {/* Preset Pills & Custom Playlists Bar */}
+          <div className="flex flex-wrap items-center gap-1.5 max-h-28 overflow-y-auto pr-0.5">
+            {/* Curated Presets */}
             {SPOTIFY_FOCUS_PRESETS.map((preset) => {
               const isSelected = activePresetId === preset.id;
               return (
@@ -221,22 +329,154 @@ export function SpotifyFocusPlayer() {
               );
             })}
 
+            {/* User Custom Playlists */}
+            {customPlaylists.map((cp) => {
+              const isSelected = activePresetId === cp.id;
+              return (
+                <div
+                  key={cp.id}
+                  onClick={() => handleSelectCustomPlaylist(cp)}
+                  className={`group flex items-center gap-1 rounded-full border pl-2.5 pr-1.5 py-1 text-xs font-bold transition-all cursor-pointer ${
+                    isSelected
+                      ? "border-primary bg-primary/15 text-primary shadow-xs"
+                      : "border-border/80 bg-background/60 text-muted hover:border-primary/50 hover:text-foreground"
+                  }`}
+                >
+                  <span>{cp.emoji}</span>
+                  <span className="max-w-[100px] truncate">{cp.name}</span>
+                  <button
+                    type="button"
+                    onClick={(e) => handleDeleteCustomPlaylist(cp.id, e)}
+                    className="text-muted hover:text-danger-fg ml-0.5 flex size-4 items-center justify-center rounded-full hover:bg-danger/20 transition-colors"
+                    title={`Delete "${cp.name}"`}
+                  >
+                    <TrashIcon size={11} />
+                  </button>
+                </div>
+              );
+            })}
+
+            {/* Add Playlist Button */}
             <button
               type="button"
-              onClick={() => setShowCustomInput((prev) => !prev)}
+              onClick={() => {
+                setShowAddForm((prev) => !prev);
+                setShowCustomInput(false);
+              }}
               className={`flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-bold transition-all ${
-                activePresetId === "custom" || showCustomInput
+                showAddForm
                   ? "border-primary bg-primary/15 text-primary"
-                  : "border-border/80 bg-background/60 text-muted hover:border-primary/50 hover:text-foreground"
+                  : "border-primary/60 bg-primary/5 text-primary hover:bg-primary/15"
               }`}
+              title="Add a custom Spotify playlist"
             >
-              <span>🔗</span>
-              <span>Custom</span>
+              <PlusIcon size={12} />
+              <span>Add Playlist</span>
+            </button>
+
+            {/* Quick URL Toggle */}
+            <button
+              type="button"
+              onClick={() => {
+                setShowCustomInput((prev) => !prev);
+                setShowAddForm(false);
+              }}
+              className={`flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-bold transition-all ${
+                showCustomInput || activePresetId === "custom"
+                  ? "border-border bg-border/40 text-foreground"
+                  : "border-border/80 bg-background/60 text-muted hover:text-foreground"
+              }`}
+              title="Paste one-off Spotify URL"
+            >
+              <span>🔗 Link</span>
             </button>
           </div>
 
-          {/* Custom Link Input Form */}
-          {showCustomInput && (
+          {/* ADD PLAYLIST FORM */}
+          {showAddForm && (
+            <form
+              onSubmit={handleAddCustomPlaylist}
+              className="border-primary/40 bg-background/90 flex flex-col gap-2 rounded-2xl border p-2.5 shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-foreground text-xs font-black">
+                  Add Custom Spotify Playlist
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowAddForm(false)}
+                  className="text-muted hover:text-foreground text-xs"
+                >
+                  Cancel
+                </button>
+              </div>
+
+              {/* Name & Emoji inputs */}
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="Playlist Name (e.g. Chill Synthwave, Coding Mix)..."
+                  className="border-border bg-card text-foreground placeholder:text-muted/60 focus:border-primary focus:ring-primary/20 flex-1 rounded-xl border px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:ring-2"
+                  maxLength={40}
+                  required
+                />
+                <input
+                  type="text"
+                  value={newEmoji}
+                  onChange={(e) => setNewEmoji(e.target.value)}
+                  title="Emoji icon"
+                  className="border-border bg-card text-foreground text-center focus:border-primary w-10 rounded-xl border py-1.5 text-xs font-bold focus:outline-none"
+                  maxLength={3}
+                />
+              </div>
+
+              {/* Quick Emoji selection */}
+              <div className="flex items-center gap-1 overflow-x-auto py-0.5">
+                <span className="text-muted text-[10px] font-bold mr-1">Icon:</span>
+                {EMOJI_PRESETS.map((em) => (
+                  <button
+                    key={em}
+                    type="button"
+                    onClick={() => setNewEmoji(em)}
+                    className={`rounded-lg px-1.5 py-0.5 text-xs transition-transform hover:scale-125 ${
+                      newEmoji === em ? "bg-primary/20 border border-primary/50" : ""
+                    }`}
+                  >
+                    {em}
+                  </button>
+                ))}
+              </div>
+
+              {/* URL input & submit */}
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="text"
+                  value={newUrl}
+                  onChange={(e) => setNewUrl(e.target.value)}
+                  placeholder="Spotify URL (playlist, album, or track)..."
+                  className="border-border bg-card text-foreground placeholder:text-muted/60 focus:border-primary focus:ring-primary/20 flex-1 rounded-xl border px-2.5 py-1.5 text-xs font-mono focus:outline-none focus:ring-2"
+                  required
+                />
+                <button
+                  type="submit"
+                  className="bg-primary text-on-primary hover:bg-primary/90 rounded-xl px-3 py-1.5 text-xs font-black transition-colors whitespace-nowrap"
+                >
+                  Save & Play
+                </button>
+              </div>
+
+              {addError && (
+                <span className="text-danger-fg text-[10px] font-bold">
+                  {addError}
+                </span>
+              )}
+            </form>
+          )}
+
+          {/* Quick One-off Link Input Form */}
+          {showCustomInput && !showAddForm && (
             <form onSubmit={handleApplyCustomLink} className="flex flex-col gap-1.5 pt-1">
               <div className="flex items-center gap-1.5">
                 <input

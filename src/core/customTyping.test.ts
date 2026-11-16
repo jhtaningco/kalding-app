@@ -126,11 +126,58 @@ describe("calculateCustomTextScore", () => {
 
 describe("PRESET_CUSTOM_TEXTS", () => {
   it("provides valid presets with texts and titles", () => {
-    expect(PRESET_CUSTOM_TEXTS.length).toBeGreaterThanOrEqual(4);
+    expect(PRESET_CUSTOM_TEXTS.length).toBeGreaterThanOrEqual(8);
     for (const preset of PRESET_CUSTOM_TEXTS) {
       expect(preset.id).toBeTruthy();
       expect(preset.title).toBeTruthy();
       expect(preset.text.length).toBeGreaterThan(20);
+      expect(preset.category).toBeTruthy();
     }
+  });
+
+  it("filters presets correctly by category", async () => {
+    const { filterCustomPresets } = await import("./customTyping");
+    const speeches = filterCustomPresets(PRESET_CUSTOM_TEXTS, "speech");
+    expect(speeches.length).toBeGreaterThan(0);
+    expect(speeches.every((p) => p.category === "speech")).toBe(true);
+
+    const all = filterCustomPresets(PRESET_CUSTOM_TEXTS, "all");
+    expect(all.length).toBe(PRESET_CUSTOM_TEXTS.length);
+  });
+});
+
+describe("validateCustomText and createSavedCustomText", () => {
+  it("validates that at least 3 words are provided", async () => {
+    const { validateCustomText } = await import("./customTyping");
+    expect(validateCustomText("Title", "one two").valid).toBe(false);
+    expect(validateCustomText("Title", "one two three").valid).toBe(true);
+  });
+
+  it("rejects excessively long titles (> 80 chars)", async () => {
+    const { validateCustomText } = await import("./customTyping");
+    const longTitle = "a".repeat(85);
+    expect(validateCustomText(longTitle, "one two three").valid).toBe(false);
+  });
+
+  it("creates a properly formatted SavedCustomText with fallback title", async () => {
+    const { createSavedCustomText } = await import("./customTyping");
+    const saved = createSavedCustomText("", "The quick brown fox jumps over the lazy dog.");
+    expect(saved.id).toContain("custom-");
+    expect(saved.title).toContain("Excerpt: The quick brown fox...");
+    expect(saved.wordCount).toBe(9);
+    expect(saved.createdAt).toBeGreaterThan(0);
+    expect(saved.category).toBe("custom");
+  });
+
+  it("creates a SavedCustomText with explicit title and source", async () => {
+    const { createSavedCustomText } = await import("./customTyping");
+    const saved = createSavedCustomText(
+      "My Speech",
+      "We will succeed, and we will never give up on our dreams.",
+      { source: "Personal Notes", category: "speech" },
+    );
+    expect(saved.title).toBe("My Speech");
+    expect(saved.source).toBe("Personal Notes");
+    expect(saved.category).toBe("speech");
   });
 });

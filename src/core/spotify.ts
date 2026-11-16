@@ -114,3 +114,62 @@ export function parseSpotifyUrl(input: string): ParsedSpotifyResult | null {
 
   return null;
 }
+
+export interface CustomSpotifyPlaylist {
+  id: string;
+  name: string;
+  emoji: string;
+  url: string;
+  embedUrl: string;
+  spotifyId: string;
+  type: SpotifyEmbedType;
+  createdAt: number;
+}
+
+export type CreateCustomPlaylistResult =
+  | { success: true; playlist: CustomSpotifyPlaylist }
+  | { success: false; error: string };
+
+/**
+ * Validates and constructs a CustomSpotifyPlaylist entity.
+ */
+export function createCustomSpotifyPlaylist(
+  name: string,
+  url: string,
+  emoji = "🎧",
+): CreateCustomPlaylistResult {
+  const trimmedName = name.trim();
+  if (!trimmedName) {
+    return { success: false, error: "Playlist name cannot be empty." };
+  }
+  if (trimmedName.length > 40) {
+    return {
+      success: false,
+      error: "Playlist name must be 40 characters or fewer.",
+    };
+  }
+
+  const parsed = parseSpotifyUrl(url);
+  if (!parsed) {
+    return {
+      success: false,
+      error: "Please enter a valid Spotify playlist, album, or track URL.",
+    };
+  }
+
+  const cleanEmoji = emoji.trim() || "🎧";
+
+  return {
+    success: true,
+    playlist: {
+      id: `spotify-custom-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      name: trimmedName,
+      emoji: cleanEmoji,
+      url: url.trim(),
+      embedUrl: parsed.embedUrl,
+      spotifyId: parsed.id,
+      type: parsed.type,
+      createdAt: Date.now(),
+    },
+  };
+}
