@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Tables } from "@/types/database";
 import { Kalding } from "@/components/kalding/Kalding";
@@ -29,6 +30,35 @@ export function SessionSummary({ results, totalPoints, onRestart }: SessionSumma
   const avgAccuracy = Math.round(
     results.reduce((acc, r) => acc + r.accuracy, 0) / (totalCount || 1),
   );
+
+  const tabPressedRef = useRef(false);
+  const tabTimeRef = useRef(0);
+  const [tabHint, setTabHint] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        tabPressedRef.current = true;
+        tabTimeRef.current = Date.now();
+        setTabHint(true);
+        return;
+      }
+      if (e.key === "Enter") {
+        const isTabCombo =
+          tabPressedRef.current || (Date.now() - tabTimeRef.current < 2500);
+        if (isTabCombo) {
+          e.preventDefault();
+          tabPressedRef.current = false;
+          setTabHint(false);
+          onRestart();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onRestart]);
 
   return (
     <div className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center justify-center gap-6 p-4 text-center sm:p-6">
@@ -121,9 +151,15 @@ export function SessionSummary({ results, totalPoints, onRestart }: SessionSumma
         <button
           type="button"
           onClick={onRestart}
-          className="border-primary bg-primary text-on-primary inline-flex min-h-12 items-center justify-center rounded-2xl border-2 px-6 font-extrabold shadow-[0_4px_0_var(--primary-shadow)] transition-all hover:brightness-110 active:translate-y-1 active:shadow-none"
+          className={`border-primary bg-primary text-on-primary inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border-2 px-6 font-extrabold shadow-[0_4px_0_var(--primary-shadow)] transition-all hover:brightness-110 active:translate-y-1 active:shadow-none ${
+            tabHint ? "ring-4 ring-primary/40 scale-105" : ""
+          }`}
+          title="Restart practice (Tab + Enter)"
         >
-          Practice 10 More Words
+          <span>Practice 10 More Words</span>
+          <span className="border-border/60 bg-background/25 text-on-primary rounded px-1.5 py-0.5 text-[10px] font-mono font-bold tracking-tight">
+            Tab + Enter
+          </span>
         </button>
 
         <Button

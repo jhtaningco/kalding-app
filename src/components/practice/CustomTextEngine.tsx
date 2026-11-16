@@ -331,7 +331,7 @@ export function CustomTextEngine({
   };
 
   // Restart Current Text
-  const handleRestart = () => {
+  const handleRestart = useCallback(() => {
     setTypedText("");
     setMistakeCount(0);
     startTimeRef.current = null;
@@ -339,8 +339,77 @@ export function CustomTextEngine({
     setLiveWpm(0);
     setScoreResult(null);
     setFinalWpm(null);
+    setTabRestartHint(false);
+    tabPressedRef.current = false;
     setStep("typing");
-  };
+  }, []);
+
+  // Monkeytype-style Tab + Enter shortcut to restart test / type again
+  const tabPressedRef = useRef(false);
+  const tabTimestampRef = useRef(0);
+  const [tabRestartHint, setTabRestartHint] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept when user is typing in form inputs on setup screen
+      if (step === "setup") return;
+
+      if (e.key === "Tab") {
+        e.preventDefault();
+        tabPressedRef.current = true;
+        tabTimestampRef.current = Date.now();
+        setTabRestartHint(true);
+        return;
+      }
+
+      if (e.key === "Enter") {
+        const now = Date.now();
+        const isTabCombo =
+          tabPressedRef.current || now - tabTimestampRef.current < 2500;
+
+        if (isTabCombo) {
+          e.preventDefault();
+          tabPressedRef.current = false;
+          setTabRestartHint(false);
+          handleRestart();
+          return;
+        }
+
+        // On summary screen, pressing Enter when no other button has specific focus also restarts
+        if (step === "summary") {
+          const activeEl = document.activeElement;
+          const isAnotherInteractive =
+            activeEl &&
+            (activeEl.tagName === "A" ||
+              (activeEl.tagName === "BUTTON" &&
+                !activeEl.getAttribute("data-type-again")));
+          if (!isAnotherInteractive) {
+            e.preventDefault();
+            handleRestart();
+          }
+        }
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "Tab") {
+        // Keep active for a comfortable window so sequential Tab -> Enter triggers restart
+        setTimeout(() => {
+          if (Date.now() - tabTimestampRef.current >= 2000) {
+            tabPressedRef.current = false;
+            setTabRestartHint(false);
+          }
+        }, 2000);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [step, handleRestart]);
 
   // Dynamic Kalding Mood & Feedback
   let kaldingMood: KaldingMood = "happy";
@@ -755,9 +824,28 @@ export function CustomTextEngine({
               onMistake={handleMistake}
             />
 
+            {/* Tab + Enter quick restart hint banner */}
+            {tabRestartHint && (
+              <div className="border-primary/50 bg-primary/10 text-primary flex items-center justify-between gap-3 rounded-2xl border px-4 py-2 text-xs font-bold animate-pulse shadow-md">
+                <span className="flex items-center gap-1.5">
+                  <RefreshIcon size={14} />
+                  <span>Restart paragraph?</span>
+                </span>
+                <span className="border-primary/60 bg-primary/20 text-foreground rounded px-2 py-0.5 font-mono text-xs font-black">
+                  Press Enter ↵
+                </span>
+              </div>
+            )}
+
             {/* Quick helper footer */}
             <div className="flex items-center justify-between text-xs font-bold text-muted px-2">
-              <span>Tip: Spacebar moves to the next word. Enter or Space advances to the next paragraph.</span>
+              <span className="flex items-center gap-1.5">
+                <span>Spacebar advances words.</span>
+                <span className="border-border/80 bg-card rounded px-1.5 py-0.5 font-mono text-[10px] text-foreground">
+                  Tab + Enter
+                </span>
+                <span>restarts.</span>
+              </span>
               <button
                 type="button"
                 onClick={() => setStep("setup")}
@@ -866,12 +954,19 @@ export function CustomTextEngine({
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2 w-full">
                 <Button
                   type="button"
-                  variant="secondary"
+                  data-type-again="true"
+                  variant={tabRestartHint ? "primary" : "secondary"}
                   size="lg"
                   onClick={handleRestart}
-                  className="flex-1 sm:flex-initial"
+                  className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 transition-all ${
+                    tabRestartHint ? "ring-4 ring-primary/40 scale-105" : ""
+                  }`}
+                  title="Restart test (Tab + Enter)"
                 >
-                  Type Again
+                  <span>Type Again</span>
+                  <span className="border-border/80 bg-background/80 text-muted rounded px-1.5 py-0.5 text-[10px] font-mono font-bold tracking-tight">
+                    Tab + Enter
+                  </span>
                 </Button>
 
                 <Button
@@ -898,6 +993,12 @@ export function CustomTextEngine({
                   Practice Hub
                 </ButtonLink>
               </div>
+
+              {tabRestartHint && (
+                <div className="text-primary text-xs font-black animate-pulse">
+                  Press Enter ↵ to restart immediately!
+                </div>
+              )}
             </Card>
           </div>
         )}
