@@ -19,6 +19,12 @@ describe("normalizeCustomText", () => {
     expect(normalized).toBe(`Life--or something like it - isn't easy.`);
   });
 
+  it("replaces bullet points (•) and bullet variants with standard hyphens (-)", () => {
+    const raw = "Key takeaways:\n• First point\n• Second point\n◦ Third point";
+    const normalized = normalizeCustomText(raw);
+    expect(normalized).toBe("Key takeaways:\n- First point\n- Second point\n- Third point");
+  });
+
   it("preserves paragraph breaks while cleaning multiple newlines and spaces", () => {
     const raw = "Paragraph one.\n\nParagraph   two.\r\n\r\n   Paragraph three.";
     const normalized = normalizeCustomText(raw);

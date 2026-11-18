@@ -161,6 +161,7 @@ export function filterCustomPresets(
 export interface NormalizationOptions {
   normalizeQuotes?: boolean;
   normalizeDashes?: boolean;
+  normalizeBullets?: boolean;
   normalizeWhitespace?: boolean;
   preserveParagraphs?: boolean;
 }
@@ -169,6 +170,7 @@ export interface NormalizationOptions {
  * Normalizes pasted text so it is fluidly typeable on standard QWERTY keyboards:
  * - Replaces typographic curly quotes (“ ” ‘ ’) with standard straight quotes (" ')
  * - Replaces em-dashes and en-dashes (— –) with standard dashes (-- -)
+ * - Replaces bullet points (•, ◦, ‣, ⁃, ∙, ●) with standard hyphens (-)
  * - Converts non-breaking spaces (\u00A0) and consecutive whitespace to a single space
  * - When preserveParagraphs is true (default): preserves clean paragraph breaks (\n)
  *   while removing redundant blank lines and soft linebreaks.
@@ -181,6 +183,7 @@ export function normalizeCustomText(
   const {
     normalizeQuotes = true,
     normalizeDashes = true,
+    normalizeBullets = true,
     normalizeWhitespace = true,
     preserveParagraphs = true,
   } = options;
@@ -189,6 +192,11 @@ export function normalizeCustomText(
 
   // Replace non-breaking spaces
   text = text.replace(/\u00A0/g, " ");
+
+  if (normalizeBullets) {
+    // Replace bullet points (•, ◦, ‣, ⁃, ∙, ●) with standard hyphen (-)
+    text = text.replace(/[\u2022\u25E6\u2023\u2043\u2219\u25CF]/g, "-");
+  }
 
   if (normalizeQuotes) {
     text = text

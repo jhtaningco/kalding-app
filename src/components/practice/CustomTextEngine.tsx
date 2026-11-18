@@ -171,7 +171,9 @@ export function CustomTextEngine({
   const handleStartTyping = () => {
     if (!hasEnoughWords) return;
 
-    const preparedText = autoClean ? normalizeCustomText(inputText) : inputText.trim();
+    const preparedText = autoClean
+      ? normalizeCustomText(inputText)
+      : inputText.replace(/[\u2022\u25E6\u2023\u2043\u2219\u25CF]/g, "-").trim();
     setTargetText(preparedText);
     setTypedText("");
     setMistakeCount(0);
@@ -647,12 +649,33 @@ export function CustomTextEngine({
                   id="custom-text-input"
                   rows={6}
                   value={inputText}
+                  onPaste={(e) => {
+                    const pasted = e.clipboardData.getData("text");
+                    if (pasted && /[\u2022\u25E6\u2023\u2043\u2219\u25CF]/.test(pasted)) {
+                      e.preventDefault();
+                      const cleaned = pasted.replace(/[\u2022\u25E6\u2023\u2043\u2219\u25CF]/g, "-");
+                      const target = e.currentTarget;
+                      const start = target.selectionStart;
+                      const end = target.selectionEnd;
+                      const current = target.value;
+                      const nextVal = current.substring(0, start) + cleaned + current.substring(end);
+                      setSelectedPresetId(null);
+                      if (!inputTitle) {
+                        setActiveTitle("Custom Paragraph");
+                      }
+                      setInputText(nextVal);
+                      setTimeout(() => {
+                        target.selectionStart = target.selectionEnd = start + cleaned.length;
+                      }, 0);
+                    }
+                  }}
                   onChange={(e) => {
                     setSelectedPresetId(null);
                     if (!inputTitle) {
                       setActiveTitle("Custom Paragraph");
                     }
-                    setInputText(e.target.value);
+                    const val = e.target.value.replace(/[\u2022\u25E6\u2023\u2043\u2219\u25CF]/g, "-");
+                    setInputText(val);
                   }}
                   placeholder="Paste your English paragraph, article excerpt, or speech here..."
                   className="border-border focus:border-primary/80 focus:ring-primary/20 w-full rounded-2xl border-2 bg-background p-4 font-mono text-sm leading-relaxed text-foreground placeholder:text-muted/60 focus:outline-none focus:ring-4 transition-all"
@@ -680,7 +703,7 @@ export function CustomTextEngine({
                         onChange={(e) => setAutoClean(e.target.checked)}
                         className="accent-primary size-4 rounded"
                       />
-                      <span>Auto-clean quotes & format paragraphs</span>
+                      <span>Auto-clean quotes, bullets (• → -) & paragraphs</span>
                     </label>
 
                     {inputText && (
